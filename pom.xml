@@ -9,6 +9,8 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>tiny-RPC-core</module>
+        <module>tiny-RPC-server</module>
+        <module>tiny-RPC-client</module>
     </modules>
 
     <properties>
