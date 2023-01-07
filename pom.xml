@@ -11,6 +11,8 @@
         <module>tiny-RPC-core</module>
         <module>tiny-RPC-server</module>
         <module>tiny-RPC-client</module>
+        <module>tiny-RPC-service</module>
+        <module>tiny-RPC-serviceImpl</module>
     </modules>
 
     <properties>
@@ -45,6 +47,11 @@
             <version>1.18.24</version>
         </dependency>
 
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.10</version>
+        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tiny-RPC-server</artifactId>
+    <artifactId>tiny-RPC-serviceImpl</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -19,12 +19,12 @@
     <dependencies>
         <dependency>
             <groupId>org.ene</groupId>
-            <artifactId>tiny-RPC-core</artifactId>
+            <artifactId>tiny-RPC-service</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ene</groupId>
-            <artifactId>tiny-RPC-serviceImpl</artifactId>
+            <artifactId>tiny-RPC-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
