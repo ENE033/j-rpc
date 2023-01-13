@@ -2,12 +2,13 @@ package RPC.core.protocol;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Data
-public abstract class Message {
-    public Integer type;
+public abstract class Message implements Serializable {
+    private Integer type;
     public Integer seq;
 
     public static final Integer REQUEST = 1;

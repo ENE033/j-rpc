@@ -9,4 +9,9 @@ public class TestServiceImpl implements TestService {
     public String getAnswer(String name) {
         return name.toLowerCase();
     }
+
+    @Override
+    public String getAnswer(String name, Integer age) {
+        return name + age;
+    }
 }

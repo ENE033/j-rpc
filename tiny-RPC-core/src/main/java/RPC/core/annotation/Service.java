@@ -6,4 +6,5 @@ import java.lang.annotation.*;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Service {
+    String name() default "";
 }

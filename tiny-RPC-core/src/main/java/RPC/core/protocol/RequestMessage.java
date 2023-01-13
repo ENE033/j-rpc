@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class RequestMessage extends Message implements Serializable {
+public class RequestMessage extends Message {
     /**
      * 调用的服务名
      */

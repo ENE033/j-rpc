@@ -1,19 +1,34 @@
 package RPC.server;
 
+import RPC.core.handler.RequestHandler;
 import RPC.core.protocol.MessageCodec;
 import RPC.registry.ServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.extern.slf4j.Slf4j;
+
+import java.net.InetSocketAddress;
 
 
+@Slf4j
 public class RPCServer extends ServiceRegistry implements Runnable {
 
-    public RPCServer() {
+    InetSocketAddress inetSocketAddress;
+
+    public RPCServer(String host, Integer port) {
+        this(new InetSocketAddress(host, port));
+    }
+
+    public RPCServer(InetSocketAddress inetSocketAddress) {
+        this.inetSocketAddress = inetSocketAddress;
         scanServices();
     }
 
@@ -23,22 +38,35 @@ public class RPCServer extends ServiceRegistry implements Runnable {
 
     @Override
     public void run() {
-        new ServerBootstrap()
-                .channel(NioServerSocketChannel.class)
-                .group(main, sub)
-                .childHandler(new ChannelInitializer<NioServerSocketChannel>() {
-                    @Override
-                    protected void initChannel(NioServerSocketChannel nioServerSocketChannel) throws Exception {
-                        ChannelPipeline pipeline = nioServerSocketChannel.pipeline();
-                        // 帧解码器
-                        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
-                        // 协议
-                        pipeline.addLast(new MessageCodec());
-                        // 日志
-                        pipeline.addLast(new LoggingHandler());
+        try {
+            ChannelFuture channelFuture = new ServerBootstrap()
+                    .channel(NioServerSocketChannel.class)
+                    .group(main, sub)
+                    .childHandler(new ChannelInitializer<NioSocketChannel>() {
+                        @Override
+                        protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
+                            ChannelPipeline pipeline = nioSocketChannel.pipeline();
+                            // 帧解码器
+                            pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
+                            // 协议
+                            pipeline.addLast(new MessageCodec());
+                            // 日志
+                            pipeline.addLast(new LoggingHandler());
+                            // 请求消息处理器
+                            pipeline.addLast(new RequestHandler());
+                        }
+                    })
+                    .bind(inetSocketAddress);
+            channelFuture.sync();
+            Channel channel = channelFuture.channel();
+            channel.closeFuture().addListener(future -> {
+                main.shutdownGracefully();
+                sub.shutdownGracefully();
+            });
 
-                    }
-                });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

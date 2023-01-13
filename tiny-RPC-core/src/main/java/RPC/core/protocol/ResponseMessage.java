@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class ResponseMessage extends Message implements Serializable {
+public class ResponseMessage extends Message {
 
     public ResponseStatus responseStatus;
 

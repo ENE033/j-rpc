@@ -27,6 +27,8 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         buffer.writeByte(1);
         // 无意义
         buffer.writeByte(0);
+//        // 序列号
+//        buffer.writeInt(message.getSeq());
         // 序列化消息
         byte[] messageBytes = SerializerMap.get(1).serializer(message);
         // 消息长度
@@ -54,6 +56,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         byte serializerType = buf.readByte();
         // 无意义
         buf.readByte();
+//        Integer seq = buf.readInt();
         // 消息长度
         int length = buf.readInt();
         // 写入字节数组

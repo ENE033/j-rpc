@@ -1,11 +1,16 @@
 package RPC.core.handler;
 
 import RPC.core.protocol.RequestMessage;
+import RPC.core.protocol.ResponseMessage;
+import RPC.core.protocol.ResponseStatus;
+import RPC.core.util.ServiceProvider;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 
+@Slf4j
 public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RequestMessage requestMessage) throws Exception {
@@ -22,11 +27,19 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
         // 超时时间
         Integer timeOut = requestMessage.timeOut;
 
+        Object obj = ServiceProvider.getService(serviceName);
 
-        Class<?> clazz = Class.forName(serviceName);
+        Class<?> clazz = ServiceProvider.getClass(serviceName);
 
-        Method method = clazz.getDeclaredMethod(methodName);
+        Method method = clazz.getDeclaredMethod(methodName, argsType);
 
+        Object result = method.invoke(obj, args);
+
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setResult(result);
+        responseMessage.setResponseStatus(ResponseStatus.SUCCESS);
+        responseMessage.setSeq(seq);
+        channelHandlerContext.writeAndFlush(responseMessage);
 
     }
 }
