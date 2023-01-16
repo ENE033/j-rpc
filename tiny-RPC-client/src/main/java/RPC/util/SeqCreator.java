@@ -4,8 +4,8 @@ import java.util.BitSet;
 import java.util.Random;
 
 public class SeqCreator {
-    private static Random random = new Random();
-    private static BitSet bitSet = new BitSet();
+    private static final Random random = new Random();
+    private static final BitSet bitSet = new BitSet();
 
     public static Integer getSeq() {
         int seq;

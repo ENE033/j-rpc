@@ -2,7 +2,7 @@ package RPC.server;
 
 import RPC.core.handler.RequestHandler;
 import RPC.core.protocol.MessageCodec;
-import RPC.registry.ServiceRegistry;
+import RPC.registry.ServiceScanner;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -19,7 +19,7 @@ import java.net.InetSocketAddress;
 
 
 @Slf4j
-public class RPCServer extends ServiceRegistry implements Runnable {
+public class RPCServer extends ServiceScanner implements Runnable {
 
     InetSocketAddress inetSocketAddress;
 
@@ -29,7 +29,7 @@ public class RPCServer extends ServiceRegistry implements Runnable {
 
     public RPCServer(InetSocketAddress inetSocketAddress) {
         this.inetSocketAddress = inetSocketAddress;
-        scanServices();
+        scanServices(inetSocketAddress);
     }
 
     NioEventLoopGroup main = new NioEventLoopGroup();
@@ -48,10 +48,10 @@ public class RPCServer extends ServiceRegistry implements Runnable {
                             ChannelPipeline pipeline = nioSocketChannel.pipeline();
                             // 帧解码器
                             pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
-                            // 协议
-                            pipeline.addLast(new MessageCodec());
                             // 日志
                             pipeline.addLast(new LoggingHandler());
+                            // 协议
+                            pipeline.addLast(new MessageCodec());
                             // 请求消息处理器
                             pipeline.addLast(new RequestHandler());
                         }

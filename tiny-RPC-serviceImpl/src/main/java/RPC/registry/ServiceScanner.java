@@ -1,20 +1,17 @@
 package RPC.registry;
 
+import RPC.core.ServiceRegistry;
 import RPC.core.annotation.Service;
 import RPC.core.annotation.ServiceScan;
 import RPC.core.util.ReflectUtil;
-import RPC.core.util.ServiceProvider;
+import RPC.core.ServiceProvider;
 import cn.hutool.core.util.ClassUtil;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Set;
+import java.net.InetSocketAddress;
 
-public class ServiceRegistry {
+public class ServiceScanner {
 
-    public void scanServices() {
+    public void scanServices(InetSocketAddress inetSocketAddress) {
         String mainClassName = ReflectUtil.getMainClassName();
         Class<?> mainClass = null;
         try {
@@ -33,6 +30,7 @@ public class ServiceRegistry {
             for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, Service.class)) {
                 for (Class<?> anInterface : clazz.getInterfaces()) {
                     ServiceProvider.addService(anInterface.getCanonicalName(), clazz);
+                    ServiceRegistry.registry(anInterface.getCanonicalName(), inetSocketAddress);
 //                    for (Method declaredMethod : anInterface.getDeclaredMethods()) {
 //                        ServiceProvider.addMethod(anInterface.getCanonicalName(), declaredMethod);
 //                    }

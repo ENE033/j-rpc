@@ -1,17 +1,14 @@
 package RPC.proxy;
 
 import RPC.client.RPCClient;
+import RPC.core.ServiceRegistry;
 import RPC.core.promise.ResponsePromise;
 import RPC.core.protocol.RequestMessage;
-import RPC.core.util.ServiceProvider;
-import RPC.service.TestService;
 import RPC.util.SeqCreator;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -27,7 +24,9 @@ public class RPCClientProxyFactory {
                 new Class[]{clazz},
                 (proxy, method, args) -> {
                     RPCClient rpcClient = new RPCClient();
-                    Channel channel = rpcClient.getChannel(new InetSocketAddress("localhost", 4555));
+                    // 获取一个实例的地址
+                    InetSocketAddress serviceAddress = ServiceRegistry.getServiceAddress(clazz.getCanonicalName());
+                    Channel channel = rpcClient.getChannel(serviceAddress);
                     RequestMessage requestMessage = new RequestMessage();
                     DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
                     Integer seq = SeqCreator.getSeq();

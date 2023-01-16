@@ -65,10 +65,10 @@ public class RPCClient {
                             ChannelPipeline pipeline = nioSocketChannel.pipeline();
                             // 帧解码器
                             pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
-                            // 协议
-                            pipeline.addLast(new MessageCodec());
                             // 日志
                             pipeline.addLast(new LoggingHandler());
+                            // 协议
+                            pipeline.addLast(new MessageCodec());
                             // 响应消息处理器
                             pipeline.addLast(new ResponseHandler());
                         }
