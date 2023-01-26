@@ -3,8 +3,12 @@ package RPC.serviceImpl;
 import RPC.core.annotation.Service;
 import RPC.service.TestService;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Service
 public class TestServiceImpl implements TestService {
+    public static int count = 0;
+
     @Override
     public String getAnswer(String name) {
         return name.toLowerCase();
@@ -14,4 +18,10 @@ public class TestServiceImpl implements TestService {
     public String getAnswer(String name, Integer age) {
         return name + age;
     }
+
+    @Override
+    public Integer add() {
+        return ++count;
+    }
+
 }

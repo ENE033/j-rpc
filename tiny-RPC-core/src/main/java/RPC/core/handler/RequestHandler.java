@@ -1,17 +1,28 @@
 package RPC.core.handler;
 
+import RPC.core.config.server.writeBack.WriteBackStrategy;
 import RPC.core.protocol.RequestMessage;
 import RPC.core.protocol.ResponseMessage;
 import RPC.core.protocol.ResponseStatus;
 import RPC.core.ServiceProvider;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Slf4j
 public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> {
+
+    WriteBackStrategy writeBackStrategy;
+
+    public RequestHandler(WriteBackStrategy writeBackStrategy) {
+        this.writeBackStrategy = writeBackStrategy;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RequestMessage requestMessage) throws Exception {
         // 服务名
@@ -35,11 +46,15 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
         Object result = method.invoke(obj, args);
 
-        ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.setResult(result);
-        responseMessage.setResponseStatus(ResponseStatus.SUCCESS);
-        responseMessage.setSeq(seq);
-        channelHandlerContext.writeAndFlush(responseMessage);
+
+        // 仿照redis的多线程模式，只在写回数据的时候使用多线程
+        writeBackStrategy.writeBack(() -> {
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setResult((String) result + channelHandlerContext.channel().localAddress());
+            responseMessage.setResponseStatus(ResponseStatus.SUCCESS);
+            responseMessage.setSeq(seq);
+            channelHandlerContext.writeAndFlush(responseMessage);
+        });
 
     }
 }

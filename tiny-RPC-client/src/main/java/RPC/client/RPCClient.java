@@ -11,8 +11,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.concurrent.Promise;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -66,7 +64,7 @@ public class RPCClient {
                             // 帧解码器
                             pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
                             // 日志
-                            pipeline.addLast(new LoggingHandler());
+                            // pipeline.addLast(new LoggingHandler());
                             // 协议
                             pipeline.addLast(new MessageCodec());
                             // 响应消息处理器

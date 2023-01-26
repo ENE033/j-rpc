@@ -6,4 +6,6 @@ public interface TestService {
 
     String getAnswer(String name, Integer age);
 
+    Integer add();
+
 }
