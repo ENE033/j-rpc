@@ -8,7 +8,6 @@ import RPC.server.RPCServer;
 public class Server1 {
     public static void main(String[] args) {
         RPCServer rpcServer = new RPCServer("localhost", 4555);
-        rpcServer.setWriteBack(WriteBackStrategy.ASYNC);
         rpcServer.run();
     }
 }

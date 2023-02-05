@@ -11,10 +11,13 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class RPCClient {
     //
@@ -61,6 +64,8 @@ public class RPCClient {
                         @Override
                         protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
                             ChannelPipeline pipeline = nioSocketChannel.pipeline();
+                            // 心跳机制
+                            // pipeline.addLast(new IdleStateHandler(5, 5, 5, TimeUnit.MINUTES));
                             // 帧解码器
                             pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
                             // 日志

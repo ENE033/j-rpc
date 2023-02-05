@@ -1,5 +1,7 @@
 package RPC.core.handler;
 
+import RPC.core.config.nacos.NacosConfig;
+import RPC.core.config.server.writeBack.WriteBackMap;
 import RPC.core.config.server.writeBack.WriteBackStrategy;
 import RPC.core.protocol.RequestMessage;
 import RPC.core.protocol.ResponseMessage;
@@ -17,10 +19,8 @@ import java.lang.reflect.Method;
 @Slf4j
 public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> {
 
-    WriteBackStrategy writeBackStrategy;
 
-    public RequestHandler(WriteBackStrategy writeBackStrategy) {
-        this.writeBackStrategy = writeBackStrategy;
+    public RequestHandler() {
     }
 
     @Override
@@ -46,11 +46,11 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
         Object result = method.invoke(obj, args);
 
-
+        WriteBackStrategy writeBackStrategy = WriteBackMap.get(NacosConfig.getConfigAsInt(NacosConfig.WRITEBACK_TYPE));
         // 仿照redis的多线程模式，只在写回数据的时候使用多线程
         writeBackStrategy.writeBack(() -> {
             ResponseMessage responseMessage = new ResponseMessage();
-            responseMessage.setResult((String) result + channelHandlerContext.channel().localAddress());
+            responseMessage.setResult(result);
             responseMessage.setResponseStatus(ResponseStatus.SUCCESS);
             responseMessage.setSeq(seq);
             channelHandlerContext.writeAndFlush(responseMessage);

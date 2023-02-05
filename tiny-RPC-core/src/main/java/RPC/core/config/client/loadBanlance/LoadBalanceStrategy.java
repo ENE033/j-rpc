@@ -10,5 +10,4 @@ public interface LoadBalanceStrategy {
     Integer CONSIST_HASH = 1;
 
     Instance selectInstance(List<Instance> instances, RequestMessage requestMessage);
-
 }

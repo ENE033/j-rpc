@@ -1,6 +1,6 @@
 package RPC.core.serializer;
 
-public interface Serializer {
+public interface SerializerStrategy {
 
     <T> byte[] serializer(T obj);
 

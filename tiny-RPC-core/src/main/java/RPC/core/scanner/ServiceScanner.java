@@ -1,4 +1,4 @@
-package RPC.registry;
+package RPC.core.scanner;
 
 import java.net.InetSocketAddress;
 

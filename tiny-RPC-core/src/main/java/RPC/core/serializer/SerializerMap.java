@@ -1,26 +1,32 @@
 package RPC.core.serializer;
 
+import RPC.core.serializer.impl.JdkSerializer;
+import RPC.core.serializer.impl.JsonSerializer;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SerializerMap {
 
-    public static final Map<Integer, Serializer> MAP;
+    public static final Map<Integer, SerializerStrategy> MAP = new ConcurrentHashMap<>();
 
-    static {
-        MAP = new ConcurrentHashMap<>();
-    }
+    private final static Object lock = new Object();
 
-    public static Serializer get(int type) {
-        Serializer serializer = MAP.get(type);
-        if (serializer == null) {
-            if (type == 1) {
-                MAP.put(type, new JDKSerializer());
+    public static SerializerStrategy get(int type) {
+        SerializerStrategy serializerStrategy;
+        if ((serializerStrategy = MAP.get(type)) == null) {
+            synchronized (lock) {
+                if ((serializerStrategy = MAP.get(type)) == null) {
+                    if (type == 0) {
+                        MAP.put(type, new JdkSerializer());
+                    } else if (type == 1) {
+                        MAP.put(type, new JsonSerializer());
+                    }
+                    serializerStrategy = MAP.get(type);
+                }
             }
-            serializer = MAP.get(type);
         }
-        return serializer;
+        return serializerStrategy;
     }
-
 
 }

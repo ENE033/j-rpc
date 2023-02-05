@@ -72,7 +72,7 @@ public class ConsistHashLoadBalance implements LoadBalanceStrategy {
             long hash = hash(md5(selectKey), 0);
             // 通过ceiling找到大于等于hash值的最小节点
             Map.Entry<Long, Instance> instanceEntry = virtualInstances.ceilingEntry(hash);
-            // 如果hash值是最大的，那么就从第一个开始找
+            // 如果hash值过大，那么就从第一个开始找
             if (instanceEntry == null) {
                 return virtualInstances.firstEntry().getValue();
             }

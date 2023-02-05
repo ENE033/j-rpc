@@ -1,10 +1,11 @@
-package RPC.core.serializer;
+package RPC.core.serializer.impl;
 
 import RPC.core.exception.SerializerException;
+import RPC.core.serializer.SerializerStrategy;
 
 import java.io.*;
 
-public class JDKSerializer implements Serializer {
+public class JdkSerializer implements SerializerStrategy {
 
     @Override
     public <T> byte[] serializer(T obj) {

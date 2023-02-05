@@ -1,7 +1,7 @@
 package RPC.core.protocol;
 
-import RPC.core.serializer.JDKSerializer;
-import RPC.core.serializer.Serializer;
+import RPC.core.config.nacos.NacosConfig;
+import RPC.core.serializer.SerializerStrategy;
 import RPC.core.serializer.SerializerMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -23,14 +23,15 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         buffer.writeByte(0);
         // 消息类型
         buffer.writeByte(message.getType());
+        Integer serializeType = NacosConfig.getConfigAsInt(NacosConfig.SERIALIZE_TYPE);
         // 序列化方式
-        buffer.writeByte(1);
+        buffer.writeByte(serializeType);
         // 无意义
         buffer.writeByte(0);
 //        // 序列号
 //        buffer.writeInt(message.getSeq());
         // 序列化消息
-        byte[] messageBytes = SerializerMap.get(1).serializer(message);
+        byte[] messageBytes = SerializerMap.get(serializeType).serializer(message);
         // 消息长度
         buffer.writeInt(messageBytes.length);
         // 消息体
@@ -63,9 +64,9 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         byte[] bytes = new byte[length];
         buf.readBytes(bytes);
         // 获取反序列化器
-        Serializer serializer = SerializerMap.get(serializerType);
+        SerializerStrategy serializerStrategy = SerializerMap.get(serializerType);
         // 反序列化消息
-        Message message = (Message) serializer.deSerializer(Message.getClassType(messageType), bytes);
+        Message message = (Message) serializerStrategy.deSerializer(Message.getClassType(messageType), bytes);
         list.add(message);
     }
 

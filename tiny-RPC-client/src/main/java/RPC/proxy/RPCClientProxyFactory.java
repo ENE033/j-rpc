@@ -55,8 +55,4 @@ public class RPCClientProxyFactory {
                 });
     }
 
-    public static void chooseLoadBalance(Integer mode) {
-        ServiceRegistry.chooseLoadBalance(mode);
-    }
-
 }

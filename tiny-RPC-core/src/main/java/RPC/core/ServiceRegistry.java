@@ -1,8 +1,10 @@
 package RPC.core;
 
+import RPC.core.config.client.loadBanlance.LoadBalanceMap;
 import RPC.core.config.client.loadBanlance.LoadBalanceStrategy;
 import RPC.core.config.client.loadBanlance.impl.ConsistHashLoadBalance;
 import RPC.core.config.client.loadBanlance.impl.RandomByWeightLoadBalance;
+import RPC.core.config.nacos.NacosConfig;
 import RPC.core.protocol.RequestMessage;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
@@ -17,13 +19,7 @@ public class ServiceRegistry {
 
     private static final NamingService NAMING_SERVICE;
 
-    private static LoadBalanceStrategy loadBalanceStrategy = new RandomByWeightLoadBalance();
-
-    private static final ConcurrentHashMap<Integer, LoadBalanceStrategy> LB_MAP = new ConcurrentHashMap<>();
-
     static {
-        LB_MAP.put(0, new RandomByWeightLoadBalance());
-        LB_MAP.put(1, new ConsistHashLoadBalance());
         try {
             NAMING_SERVICE = NamingFactory.createNamingService("1.12.233.55:8848");
         } catch (NacosException e) {
@@ -47,12 +43,8 @@ public class ServiceRegistry {
             throw new RuntimeException("获取实例出现异常", e);
         }
 //        Instance instance = allInstances.get(0);
+        LoadBalanceStrategy loadBalanceStrategy = LoadBalanceMap.get(NacosConfig.getConfigAsInt(NacosConfig.LOADBALANCE_TYPE));
         Instance instance = loadBalanceStrategy.selectInstance(allInstances, requestMessage);
         return new InetSocketAddress(instance.getIp(), instance.getPort());
     }
-
-    public static void chooseLoadBalance(Integer mode) {
-        loadBalanceStrategy = LB_MAP.get(mode);
-    }
-
 }

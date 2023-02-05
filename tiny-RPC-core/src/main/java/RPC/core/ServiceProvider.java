@@ -27,6 +27,7 @@ public class ServiceProvider {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
+        CLASS_SET.add(clazz);
         CLASS_MAP.put(serviceName, clazz);
         SERVICE_MAP.put(serviceName, obj);
     }
@@ -44,22 +45,5 @@ public class ServiceProvider {
         }
         throw new RuntimeException("不存在这个服务");
     }
-
-//    public static void addMethod(String serviceName, Method method) {
-//        method.setAccessible(true);
-//        if (!METHOD_MAP.containsKey(serviceName)) {
-//            METHOD_MAP.put(serviceName, new ConcurrentHashMap<>());
-//        }
-//        METHOD_MAP.get(serviceName).put(method.getName(), method);
-//    }
-//
-//    public static Method getMethod(String serviceName, String methodName) {
-//        if (METHOD_MAP.containsKey(serviceName)) {
-//            if (METHOD_MAP.get(serviceName).containsKey(methodName)) {
-//                METHOD_MAP.get(serviceName).get(methodName);
-//            }
-//        }
-//        throw new RuntimeException("不存在这个方法");
-//    }
 
 }

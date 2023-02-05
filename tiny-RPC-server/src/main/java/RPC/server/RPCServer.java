@@ -7,7 +7,7 @@ import RPC.core.annotation.ServiceScan;
 import RPC.core.handler.RequestHandler;
 import RPC.core.protocol.MessageCodec;
 import RPC.core.util.ReflectUtil;
-import RPC.registry.ServiceScanner;
+import RPC.core.scanner.ServiceScanner;
 import cn.hutool.core.util.ClassUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -18,6 +18,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -54,6 +56,8 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
                         @Override
                         protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
                             ChannelPipeline pipeline = nioSocketChannel.pipeline();
+                            // 心跳机制
+                            // pipeline.addLast(new IdleStateHandler(5, 5, 5, TimeUnit.MINUTES));
                             // 帧解码器
                             pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
                             // 日志
@@ -61,7 +65,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
                             // 协议
                             pipeline.addLast(new MessageCodec());
                             // 请求消息处理器
-                            pipeline.addLast(new RequestHandler(writeBackStrategy));
+                            pipeline.addLast(new RequestHandler());
                         }
                     })
                     .bind(new InetSocketAddress("0.0.0.0", inetSocketAddress.getPort()));
@@ -98,9 +102,6 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
                 for (Class<?> anInterface : clazz.getInterfaces()) {
                     ServiceProvider.addService(anInterface.getCanonicalName(), clazz);
                     ServiceRegistry.registry(anInterface.getCanonicalName(), inetSocketAddress);
-//                    for (Method declaredMethod : anInterface.getDeclaredMethods()) {
-//                        ServiceProvider.addMethod(anInterface.getCanonicalName(), declaredMethod);
-//                    }
                 }
             }
         }
