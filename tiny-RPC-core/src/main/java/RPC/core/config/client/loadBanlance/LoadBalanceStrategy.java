@@ -9,5 +9,7 @@ public interface LoadBalanceStrategy {
     Integer RANDOM_BY_WEIGHT = 0;
     Integer CONSIST_HASH = 1;
 
-    Instance selectInstance(List<Instance> instances, RequestMessage requestMessage);
+    Instance select(List<Instance> instances, RequestMessage requestMessage);
+
+    Instance doSelectInstance(List<Instance> instances, RequestMessage requestMessage);
 }

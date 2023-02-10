@@ -7,9 +7,11 @@ import com.alibaba.nacos.client.config.listener.impl.PropertiesListener;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * nacos配置中心，获取配置中心的配置信息，监听配置信息的变动
+ */
 public class NacosConfig {
     public static String SERIALIZE_TYPE = "serializer";
     public static String LOADBALANCE_TYPE = "loadBalance";
@@ -29,6 +31,7 @@ public class NacosConfig {
                 String[] entry = config.split("=");
                 PROPERTIES.put(entry[0], entry[1]);
             }
+            // 注册监听器
             configService.addListener(dataId, group, new PropertiesListener() {
                 @Override
                 public void innerReceive(Properties properties) {
@@ -54,6 +57,4 @@ public class NacosConfig {
         String value = getConfig(key);
         return Integer.parseInt(value);
     }
-
-
 }

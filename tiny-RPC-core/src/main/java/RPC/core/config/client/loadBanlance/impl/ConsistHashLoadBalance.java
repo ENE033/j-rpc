@@ -1,5 +1,6 @@
 package RPC.core.config.client.loadBanlance.impl;
 
+import RPC.core.config.client.loadBanlance.AbstractLoadBalance;
 import RPC.core.config.client.loadBanlance.LoadBalanceStrategy;
 import RPC.core.protocol.RequestMessage;
 import com.alibaba.nacos.api.naming.pojo.Instance;
@@ -14,19 +15,13 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class ConsistHashLoadBalance implements LoadBalanceStrategy {
+public class ConsistHashLoadBalance extends AbstractLoadBalance {
     private final static Map<String, ConsistHashSelector> INSTANCE_MAP = new ConcurrentHashMap<>();
 
     private final Object lock = new Object();
 
     @Override
-    public Instance selectInstance(List<Instance> instances, RequestMessage requestMessage) {
-        if (instances == null || instances.size() == 0) {
-            return null;
-        }
-        if (instances.size() == 1) {
-            return instances.get(0);
-        }
+    public Instance doSelectInstance(List<Instance> instances, RequestMessage requestMessage) {
         String serviceName = requestMessage.getServiceName();
         int identityHashCode = System.identityHashCode(instances);
         ConsistHashSelector selector;

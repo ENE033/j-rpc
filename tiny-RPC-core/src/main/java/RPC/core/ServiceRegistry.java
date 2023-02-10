@@ -2,8 +2,6 @@ package RPC.core;
 
 import RPC.core.config.client.loadBanlance.LoadBalanceMap;
 import RPC.core.config.client.loadBanlance.LoadBalanceStrategy;
-import RPC.core.config.client.loadBanlance.impl.ConsistHashLoadBalance;
-import RPC.core.config.client.loadBanlance.impl.RandomByWeightLoadBalance;
 import RPC.core.config.nacos.NacosConfig;
 import RPC.core.protocol.RequestMessage;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -13,7 +11,6 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceRegistry {
 
@@ -44,7 +41,7 @@ public class ServiceRegistry {
         }
 //        Instance instance = allInstances.get(0);
         LoadBalanceStrategy loadBalanceStrategy = LoadBalanceMap.get(NacosConfig.getConfigAsInt(NacosConfig.LOADBALANCE_TYPE));
-        Instance instance = loadBalanceStrategy.selectInstance(allInstances, requestMessage);
+        Instance instance = loadBalanceStrategy.select(allInstances, requestMessage);
         return new InetSocketAddress(instance.getIp(), instance.getPort());
     }
 }

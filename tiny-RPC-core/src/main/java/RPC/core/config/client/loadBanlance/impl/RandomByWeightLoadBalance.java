@@ -1,5 +1,6 @@
 package RPC.core.config.client.loadBanlance.impl;
 
+import RPC.core.config.client.loadBanlance.AbstractLoadBalance;
 import RPC.core.config.client.loadBanlance.LoadBalanceStrategy;
 import RPC.core.protocol.RequestMessage;
 import com.alibaba.nacos.api.naming.pojo.Instance;
@@ -7,12 +8,9 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomByWeightLoadBalance implements LoadBalanceStrategy {
+public class RandomByWeightLoadBalance extends AbstractLoadBalance {
     @Override
-    public Instance selectInstance(List<Instance> instances, RequestMessage requestMessage) {
-        if (instances == null || instances.size() == 0) {
-            return null;
-        }
+    public Instance doSelectInstance(List<Instance> instances, RequestMessage requestMessage) {
         double total = 0;
         boolean allSame = true;
         for (int i = 0; i < instances.size(); i++) {

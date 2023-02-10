@@ -40,7 +40,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>RPC.instant.Server1</mainClass>
+                            <mainClass>RPC.instant.Server</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
