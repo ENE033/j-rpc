@@ -1,11 +1,11 @@
 package RPC.serviceImpl;
 
-import RPC.core.annotation.Service;
+import RPC.core.annotation.RPCService;
 import RPC.service.TestService;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Service
+@RPCService
 public class TestServiceImpl implements TestService {
     public static int count = 0;
 

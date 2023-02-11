@@ -1,5 +1,8 @@
 package RPC.core;
 
+import cn.hutool.core.util.StrUtil;
+import org.springframework.context.ApplicationContext;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,15 +20,19 @@ public class ServiceProvider {
 //    public static Map<String, Map<String, Method>> METHOD_MAP = new ConcurrentHashMap<>();
 
 
-    public static void addService(String serviceName, Class<?> clazz) {
+    public static void addService(String serviceName, Class<?> clazz, ApplicationContext applicationContext) {
         if (CLASS_SET.contains(clazz)) {
             return;
         }
         Object obj = null;
-        try {
-            obj = clazz.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+        if (applicationContext != null && applicationContext.containsBean(StrUtil.lowerFirst(clazz.getSimpleName()))) {
+            obj = applicationContext.getBean(clazz);
+        } else {
+            try {
+                obj = clazz.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
         }
         CLASS_SET.add(clazz);
         CLASS_MAP.put(serviceName, clazz);

@@ -2,7 +2,7 @@ package RPC.server;
 
 import RPC.core.ServiceProvider;
 import RPC.core.ServiceRegistry;
-import RPC.core.annotation.Service;
+import RPC.core.annotation.RPCService;
 import RPC.core.annotation.ServiceScan;
 import RPC.core.handler.RequestHandler;
 import RPC.core.protocol.MessageCodec;
@@ -18,8 +18,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -36,7 +34,6 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
 
     public RPCServer(InetSocketAddress inetSocketAddress) {
         this.inetSocketAddress = inetSocketAddress;
-        scanServices(inetSocketAddress);
     }
 
     NioEventLoopGroup main = new NioEventLoopGroup();
@@ -49,6 +46,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
         try {
             // 初始化服务端的配置
             init();
+            scanServices(inetSocketAddress);
             ChannelFuture channelFuture = new ServerBootstrap()
                     .channel(NioServerSocketChannel.class)
                     .group(main, sub)
@@ -98,9 +96,9 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
         String[] basePackages = annotation.basePackage();
 
         for (String basePackage : basePackages) {
-            for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, Service.class)) {
+            for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, RPCService.class)) {
                 for (Class<?> anInterface : clazz.getInterfaces()) {
-                    ServiceProvider.addService(anInterface.getCanonicalName(), clazz);
+                    ServiceProvider.addService(anInterface.getCanonicalName(), clazz, applicationContext);
                     ServiceRegistry.registry(anInterface.getCanonicalName(), inetSocketAddress);
                 }
             }
