@@ -1,6 +1,6 @@
-package RPC.core.config.server.writeBack.impl;
+package RPC.core.writeBack.impl;
 
-import RPC.core.config.server.writeBack.WriteBackStrategy;
+import RPC.core.writeBack.WriteBackStrategy;
 
 public class WriteBackInSync implements WriteBackStrategy {
     @Override

@@ -1,4 +1,4 @@
-package RPC.core.config.client.loadBanlance;
+package RPC.core.loadBanlance;
 
 import RPC.core.protocol.RequestMessage;
 import com.alibaba.nacos.api.naming.pojo.Instance;

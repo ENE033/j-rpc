@@ -2,6 +2,7 @@ package RPC.proxy;
 
 import RPC.client.RPCClient;
 import RPC.core.ServiceRegistry;
+import RPC.core.config.ClientRPCConfig;
 import RPC.core.promise.ResponsePromise;
 import RPC.core.protocol.RequestMessage;
 import RPC.util.SeqCreator;
@@ -17,10 +18,25 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RPCClientProxyFactory {
 
-    private static final RPCClient rpcClient = new RPCClient();
+    private final ServiceRegistry serviceRegistry;
+
+//    private final ClientRPCConfig clientRPCConfig;
+
+    private final RPCClient rpcClient;
+
+    public RPCClientProxyFactory(ClientRPCConfig clientRPCConfig) {
+//        if (clientRPCConfig == null) {
+//            clientRPCConfig = new ClientRPCConfig();
+//        }
+        clientRPCConfig.init();
+        serviceRegistry = new ServiceRegistry(clientRPCConfig);
+        rpcClient = new RPCClient(clientRPCConfig);
+    }
+
 
     @SuppressWarnings("unchecked")
-    public static <T> T getProxy(Class<T> clazz) {
+    public <T> T getProxy(Class<T> clazz) {
+
         return (T) Proxy.newProxyInstance(
                 Thread.currentThread().getContextClassLoader(),
                 new Class[]{clazz},
@@ -37,7 +53,7 @@ public class RPCClientProxyFactory {
                     }
 
                     // 获取一个实例的地址
-                    InetSocketAddress serviceAddress = ServiceRegistry.getServiceAddress(clazz.getCanonicalName(), requestMessage);
+                    InetSocketAddress serviceAddress = serviceRegistry.getServiceAddress(clazz.getCanonicalName(), requestMessage);
                     Channel channel = rpcClient.getChannel(serviceAddress);
                     DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
                     ResponsePromise.PROMISE_MAP.put(seq, promise);

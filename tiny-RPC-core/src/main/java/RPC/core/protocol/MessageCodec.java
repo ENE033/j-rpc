@@ -1,5 +1,6 @@
 package RPC.core.protocol;
 
+import RPC.core.config.ServerRPCConfig;
 import RPC.core.config.nacos.NacosConfig;
 import RPC.core.serializer.SerializerStrategy;
 import RPC.core.serializer.SerializerMap;
@@ -14,6 +15,12 @@ import java.util.List;
 @ChannelHandler.Sharable
 public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
+    private final NacosConfig nacosConfig;
+
+    public MessageCodec(NacosConfig nacosConfig) {
+        this.nacosConfig = nacosConfig;
+    }
+
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Message message, List<Object> list) throws Exception {
         ByteBuf buffer = channelHandlerContext.alloc().buffer();
@@ -23,7 +30,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         buffer.writeByte(0);
         // 消息类型
         buffer.writeByte(message.getType());
-        Integer serializeType = NacosConfig.getConfigAsInt(NacosConfig.SERIALIZE_TYPE);
+        Integer serializeType = nacosConfig.getConfigAsInt(NacosConfig.SERIALIZE_TYPE);
         // 序列化方式
         buffer.writeByte(serializeType);
         // 无意义

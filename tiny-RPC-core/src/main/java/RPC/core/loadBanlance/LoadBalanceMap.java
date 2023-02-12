@@ -1,7 +1,7 @@
-package RPC.core.config.client.loadBanlance;
+package RPC.core.loadBanlance;
 
-import RPC.core.config.client.loadBanlance.impl.ConsistHashLoadBalance;
-import RPC.core.config.client.loadBanlance.impl.RandomByWeightLoadBalance;
+import RPC.core.loadBanlance.impl.ConsistHashLoadBalance;
+import RPC.core.loadBanlance.impl.RandomByWeightLoadBalance;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

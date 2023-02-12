@@ -1,9 +1,7 @@
 package RPC.core.scanner;
 
-import java.net.InetSocketAddress;
-
 public interface ServiceScanner {
 
-    void scanServices(InetSocketAddress inetSocketAddress);
+    void scanServices(String exposedHost, Integer nettyPort);
 
 }

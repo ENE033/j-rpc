@@ -1,4 +1,4 @@
-package RPC.core.config.server.writeBack;
+package RPC.core.writeBack;
 
 
 public interface WriteBackStrategy {

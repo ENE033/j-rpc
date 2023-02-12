@@ -1,6 +1,6 @@
 package RPC.client;
 
-import RPC.core.handler.RequestHandler;
+import RPC.core.config.ClientRPCConfig;
 import RPC.core.handler.ResponseHandler;
 import RPC.core.protocol.MessageCodec;
 import io.netty.bootstrap.Bootstrap;
@@ -11,13 +11,10 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public class RPCClient {
     //
@@ -25,6 +22,11 @@ public class RPCClient {
 
     private final Object lock = new Object();
 
+    private final ClientRPCConfig clientRPCConfig;
+
+    public RPCClient(ClientRPCConfig clientRPCConfig) {
+        this.clientRPCConfig = clientRPCConfig;
+    }
 
     /**
      * 获取与服务端的连接
@@ -71,7 +73,7 @@ public class RPCClient {
                             // 日志
                             // pipeline.addLast(new LoggingHandler());
                             // 协议
-                            pipeline.addLast(new MessageCodec());
+                            pipeline.addLast(new MessageCodec(clientRPCConfig));
                             // 响应消息处理器
                             pipeline.addLast(new ResponseHandler());
                         }

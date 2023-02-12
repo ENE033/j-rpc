@@ -17,28 +17,54 @@ public class NacosConfig {
     public static String LOADBALANCE_TYPE = "loadBalance";
     public static String WRITEBACK_TYPE = "writeBack";
 
-    private static final Map<String, String> PROPERTIES = new ConcurrentHashMap<>();
+    /**
+     * 注册中心的地址
+     */
+    protected volatile String nacosRegistryAddress;
 
-    static {
-        String server = "1.12.233.55:8848";
-        String dataId = "rpc.properties";
-        String group = "DEFAULT_GROUP";
-        ConfigService configService;
+    protected volatile String nacosConfigAddress;
+
+    protected volatile String nacosConfigDataId;
+
+    protected volatile String nacosConfigGroup;
+
+    private final Map<String, String> properties = new ConcurrentHashMap<>();
+
+    protected volatile ConfigService configService;
+
+    public NacosConfig() {
+    }
+
+    /**
+     * 延迟初始化，为了整合spring
+     */
+    public void init() {
+        // for test
+//        if (nacosRegistryAddress == null) {
+//            nacosRegistryAddress = "1.12.233.55:8848";
+//        }
+//        if (nacosConfigAddress == null) {
+//            nacosConfigAddress = "1.12.233.55:8848";
+//        }
+//        if (nacosConfigDataId == null) {
+//            nacosConfigDataId = "rpc.properties";
+//        }
+//        if (nacosConfigGroup == null) {
+//            nacosConfigGroup = "DEFAULT_GROUP";
+//        }
         try {
-            configService = NacosFactory.createConfigService(server);
-            String configs = configService.getConfig(dataId, group, 10000);
+            configService = NacosFactory.createConfigService(nacosConfigAddress);
+            String configs = configService.getConfig(nacosConfigDataId, nacosConfigGroup, 10000);
             for (String config : configs.split("\n")) {
                 String[] entry = config.split("=");
-                PROPERTIES.put(entry[0], entry[1]);
+                getProperties().put(entry[0], entry[1]);
             }
             // 注册监听器
-            configService.addListener(dataId, group, new PropertiesListener() {
+            configService.addListener(nacosConfigDataId, nacosConfigGroup, new PropertiesListener() {
                 @Override
                 public void innerReceive(Properties properties) {
-                    PROPERTIES.clear();
-                    properties.forEach((k, v) -> {
-                        PROPERTIES.put((String) k, (String) v);
-                    });
+                    getProperties().clear();
+                    properties.forEach((k, v) -> getProperties().put((String) k, (String) v));
                 }
             });
         } catch (NacosException e) {
@@ -46,15 +72,53 @@ public class NacosConfig {
         }
     }
 
-    public static String getConfig(String key) {
-        if (PROPERTIES.containsKey(key)) {
-            return PROPERTIES.get(key);
+    public String getConfig(String key) {
+        if (properties.containsKey(key)) {
+            return properties.get(key);
         }
         throw new RuntimeException("该属性不存在");
     }
 
-    public static Integer getConfigAsInt(String key) {
+    public Integer getConfigAsInt(String key) {
         String value = getConfig(key);
         return Integer.parseInt(value);
     }
+
+    public String getNacosRegistryAddress() {
+        return nacosRegistryAddress;
+    }
+
+    public void setNacosRegistryAddress(String nacosRegistryAddress) {
+        this.nacosRegistryAddress = nacosRegistryAddress;
+    }
+
+    public String getNacosConfigAddress() {
+        return nacosConfigAddress;
+    }
+
+    public void setNacosConfigAddress(String nacosConfigAddress) {
+        this.nacosConfigAddress = nacosConfigAddress;
+    }
+
+    public String getNacosConfigDataId() {
+        return nacosConfigDataId;
+    }
+
+    public void setNacosConfigDataId(String nacosConfigDataId) {
+        this.nacosConfigDataId = nacosConfigDataId;
+    }
+
+    public String getNacosConfigGroup() {
+        return nacosConfigGroup;
+    }
+
+    public void setNacosConfigGroup(String nacosConfigGroup) {
+        this.nacosConfigGroup = nacosConfigGroup;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+
 }

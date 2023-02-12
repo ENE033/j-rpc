@@ -3,9 +3,7 @@ package RPC.serviceImpl;
 import RPC.core.annotation.RPCService;
 import RPC.service.TestService;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-@RPCService
+@RPCService(beanName = "testService")
 public class TestServiceImpl implements TestService {
     public static int count = 0;
 

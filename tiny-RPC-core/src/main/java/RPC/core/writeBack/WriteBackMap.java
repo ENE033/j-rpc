@@ -1,7 +1,7 @@
-package RPC.core.config.server.writeBack;
+package RPC.core.writeBack;
 
-import RPC.core.config.server.writeBack.impl.WriteBackInAsync;
-import RPC.core.config.server.writeBack.impl.WriteBackInSync;
+import RPC.core.writeBack.impl.WriteBackInAsync;
+import RPC.core.writeBack.impl.WriteBackInSync;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
