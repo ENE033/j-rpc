@@ -21,7 +21,7 @@ public class ConsistHashLoadBalance extends AbstractLoadBalance {
 
     @Override
     public Instance doSelectInstance(List<Instance> instances, RequestMessage requestMessage) {
-        String serviceName = requestMessage.getServiceName();
+        String serviceName = requestMessage.getInterfaceName();
         int identityHashCode = System.identityHashCode(instances);
         ConsistHashSelector selector;
         if ((selector = INSTANCE_MAP.get(serviceName)) == null || identityHashCode != selector.identifyHashcode) {

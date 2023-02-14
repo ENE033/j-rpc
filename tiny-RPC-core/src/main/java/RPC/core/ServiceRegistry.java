@@ -33,9 +33,19 @@ public class ServiceRegistry {
         }
     }
 
-    public void registry(String serviceName, InetSocketAddress inetSocketAddress) {
+    /**
+     * 将服务接口注册到nacos
+     *
+     * @param interfaceName 服务接口的全限定名
+     */
+    public void registryServiceToNacos(String interfaceName) {
+        if (!(nacosConfig instanceof ServerRPCConfig)) {
+            throw new RuntimeException("出现未知异常");
+        }
+        ServerRPCConfig serverRPCConfig = (ServerRPCConfig) this.nacosConfig;
         try {
-            NAMING_SERVICE.registerInstance(serviceName, inetSocketAddress.getHostName(), inetSocketAddress.getPort());
+            NAMING_SERVICE.registerInstance(
+                    interfaceName, serverRPCConfig.getExposedHost(), serverRPCConfig.getNettyPort());
         } catch (NacosException e) {
             e.printStackTrace();
         }

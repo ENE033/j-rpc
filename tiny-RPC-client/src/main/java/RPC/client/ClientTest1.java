@@ -14,8 +14,9 @@ public class ClientTest1 {
         RPCClientProxyFactory rpcClientProxyFactory = new RPCClientProxyFactory(clientRPCConfig);
         TestService testService = rpcClientProxyFactory.getProxy(TestService.class);
         System.out.println(testService.getAnswer("恐怕就ewqrqwt"));
+        System.out.println(testService.hashCode());
+        System.out.println(testService);
         System.out.println(testService.getAnswer("ewqrqwt"));
-        System.out.println(testService.getAnswer("ewqrqwt"));
-        System.out.println(testService.getAnswer("ewqrqwt"));
+        System.out.println(testService.getNow());
     }
 }

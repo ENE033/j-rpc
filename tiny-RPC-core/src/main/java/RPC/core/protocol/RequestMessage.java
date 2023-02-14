@@ -7,9 +7,9 @@ import java.io.Serializable;
 @Data
 public class RequestMessage extends Message {
     /**
-     * 调用的服务名
+     * 调用的服务接口的全限定名
      */
-    public String serviceName;
+    public String interfaceName;
     /**
      * 调用的方法名
      */
@@ -40,8 +40,8 @@ public class RequestMessage extends Message {
         return REQUEST;
     }
 
-    @Override
-    public Class<?> getClassType() {
-        return RequestMessage.class;
-    }
+//    @Override
+//    public Class<?> getClassType() {
+//        return RequestMessage.class;
+//    }
 }

@@ -17,9 +17,9 @@ public class SerializerMap {
         if ((serializerStrategy = MAP.get(type)) == null) {
             synchronized (lock) {
                 if ((serializerStrategy = MAP.get(type)) == null) {
-                    if (type == 0) {
+                    if (type == SerializerStrategy.JDK_SERIALIZER) {
                         MAP.put(type, new JdkSerializer());
-                    } else if (type == 1) {
+                    } else if (type == SerializerStrategy.JSON_SERIALIZER) {
                         MAP.put(type, new JsonSerializer());
                     }
                     serializerStrategy = MAP.get(type);

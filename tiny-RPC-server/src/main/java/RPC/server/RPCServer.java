@@ -1,6 +1,6 @@
 package RPC.server;
 
-import RPC.core.ServiceProvider;
+import RPC.core.ServiceController;
 import RPC.core.ServiceRegistry;
 import RPC.core.annotation.RPCService;
 import RPC.core.annotation.ServiceScan;
@@ -28,29 +28,15 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class RPCServer extends AbstractRPCServer implements Runnable, ServiceScanner {
 
-    private ServerRPCConfig serverRpcConfig;
+    private final ServerRPCConfig serverRpcConfig;
 
     private ServiceRegistry serviceRegistry;
 
-    private ServiceProvider serviceProvider;
-
-//    InetSocketAddress inetSocketAddress;
-
-//    public RPCServer(String host, Integer port, ServerRPCConfig serverRpcConfig) {
-//        this(new InetSocketAddress(host, port), serverRpcConfig);
-//    }
+    private ServiceController serviceController;
 
     public RPCServer(ServerRPCConfig serverRpcConfig) {
-        // for test
-//        if (serverRpcConfig == null) {
-//            serverRpcConfig = new ServerRPCConfig();
-//            serverRpcConfig.setExposedHost("localhost");
-//            serverRpcConfig.setNettyPort(4556);
-//        }
         this.serverRpcConfig = serverRpcConfig;
         this.serverRpcConfig.init();
-        this.serviceRegistry = new ServiceRegistry(this.serverRpcConfig);
-        this.serviceProvider = new ServiceProvider();
     }
 
     NioEventLoopGroup main = new NioEventLoopGroup();
@@ -61,8 +47,10 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
     @Override
     public void run() {
         try {
-            // 初始化服务端的配置
+            // 初始化，用于扩展
             init();
+            serviceRegistry = new ServiceRegistry(serverRpcConfig);
+            serviceController = new ServiceController(applicationContext);
             // 扫描服务，将本机ip和netty服务器的端口暴露
             scanServices(serverRpcConfig.getExposedHost(), serverRpcConfig.getNettyPort());
             ChannelFuture channelFuture = new ServerBootstrap()
@@ -81,7 +69,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
                             // 协议
                             pipeline.addLast(new MessageCodec(serverRpcConfig));
                             // 请求消息处理器
-                            pipeline.addLast(new RequestHandler(serviceProvider, serverRpcConfig));
+                            pipeline.addLast(new RequestHandler(serviceController, serverRpcConfig));
                         }
                     })
                     .bind(new InetSocketAddress("0.0.0.0", serverRpcConfig.getNettyPort()));
@@ -106,12 +94,9 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
      * @param nettyPort   服务所在的端口
      */
     public void scanServices(String exposedHost, Integer nettyPort) {
-        // for test
-//        if (serviceRegistry == null) {
-//            serviceRegistry = new ServiceRegistry("1.12.233.55:8848");
-//        }
-
+        // 获取主启动类的类名
         String mainClassName = ReflectUtil.getMainClassName();
+        // 通过反射创建
         Class<?> mainClass = null;
         try {
             mainClass = Thread.currentThread().getContextClassLoader().loadClass(mainClassName);
@@ -120,17 +105,17 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
         }
         assert mainClass != null;
         if (!mainClass.isAnnotationPresent(ServiceScan.class)) {
-            return;
+            throw new RuntimeException("主启动类中没有指定服务扫描路径");
         }
+
         ServiceScan annotation = mainClass.getAnnotation(ServiceScan.class);
         String[] basePackages = annotation.basePackage();
-
         for (String basePackage : basePackages) {
             for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, RPCService.class)) {
                 for (Class<?> anInterface : clazz.getInterfaces()) {
                     RPCService RPCAnnotation = clazz.getAnnotation(RPCService.class);
-                    serviceProvider.addService(anInterface.getCanonicalName(), clazz, RPCAnnotation.beanName(), applicationContext);
-                    serviceRegistry.registry(anInterface.getCanonicalName(), new InetSocketAddress(exposedHost, nettyPort));
+                    serviceController.addService(anInterface.getCanonicalName(), anInterface, clazz, RPCAnnotation.beanName());
+                    serviceRegistry.registryServiceToNacos(anInterface.getCanonicalName());
                 }
             }
         }

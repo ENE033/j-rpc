@@ -16,16 +16,26 @@ public class NacosConfig {
     public static String SERIALIZE_TYPE = "serializer";
     public static String LOADBALANCE_TYPE = "loadBalance";
     public static String WRITEBACK_TYPE = "writeBack";
+    public static String PROXY_MODE = "proxyMode";
 
     /**
      * 注册中心的地址
      */
     protected volatile String nacosRegistryAddress;
 
+    /**
+     * 配置中心的地址
+     */
     protected volatile String nacosConfigAddress;
 
+    /**
+     * 配置中心的dataId
+     */
     protected volatile String nacosConfigDataId;
 
+    /**
+     * 配置中心的group
+     */
     protected volatile String nacosConfigGroup;
 
     private final Map<String, String> properties = new ConcurrentHashMap<>();

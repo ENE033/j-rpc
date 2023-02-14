@@ -1,5 +1,7 @@
 package RPC.service;
 
+import java.time.LocalDateTime;
+
 public interface TestService {
 
     String getAnswer(String name);
@@ -8,4 +10,5 @@ public interface TestService {
 
     Integer add();
 
+    LocalDateTime getNow();
 }
