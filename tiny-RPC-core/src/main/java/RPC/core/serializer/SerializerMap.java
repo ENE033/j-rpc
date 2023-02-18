@@ -1,5 +1,6 @@
 package RPC.core.serializer;
 
+import RPC.core.serializer.impl.HessianSerializer;
 import RPC.core.serializer.impl.JdkSerializer;
 import RPC.core.serializer.impl.JsonSerializer;
 
@@ -21,6 +22,8 @@ public class SerializerMap {
                         MAP.put(type, new JdkSerializer());
                     } else if (type == SerializerStrategy.JSON_SERIALIZER) {
                         MAP.put(type, new JsonSerializer());
+                    } else if (type == SerializerStrategy.HESSIAN_SERIALIZER) {
+                        MAP.put(type, new HessianSerializer());
                     }
                     serializerStrategy = MAP.get(type);
                 }

@@ -16,8 +16,10 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -34,9 +36,6 @@ public class RPCClientProxyFactory {
     private final ClientRPCConfig clientRPCConfig;
 
     public RPCClientProxyFactory(ClientRPCConfig clientRPCConfig) {
-//        if (clientRPCConfig == null) {
-//            clientRPCConfig = new ClientRPCConfig();
-//        }
         this.clientRPCConfig = clientRPCConfig;
         this.clientRPCConfig.init();
         serviceRegistry = new ServiceRegistry(this.clientRPCConfig);
@@ -81,15 +80,26 @@ public class RPCClientProxyFactory {
 
                         try {
                             promise.await();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (promise.isSuccess()) {
-                            return promise.getNow();
+                            ResponsePromise.PROMISE_MAP.remove(seq);
+                            if (promise.isSuccess()) {
+                                Object result = promise.getNow();
+                                Class<?> returnType = method.getReturnType();
+                                Class<?> resultClass = result.getClass();
+                                if (resultClass.isAssignableFrom(returnType)) {
+                                    return result;
+                                } else {
+                                    throw new RuntimeException("返回类型与预期不匹配");
+                                }
+                            }
+                        } catch (Exception e) {
+//                            e.printStackTrace();
+                            throw new RuntimeException("rpc远程调用失败", e);
                         }
                         return null;
                     }
                 });
-    }
 
+    }
 }
+
+

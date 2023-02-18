@@ -7,6 +7,8 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,9 +19,12 @@ public class JsonSerializer implements SerializerStrategy {
     public ObjectMapper objectMapper = new ObjectMapper();
 
     public JsonSerializer() {
+//        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        objectMapper.setDateFormat(sdf);
+        objectMapper.registerModule(new Jdk8Module());
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        objectMapper.setDateFormat(sdf);
     }
 
     @Override
@@ -38,7 +43,7 @@ public class JsonSerializer implements SerializerStrategy {
     @Override
     public <T> T deSerializer(Class<T> clazz, byte[] bytes) {
         try {
-            return objectMapper.readValue(bytes, clazz);
+            return objectMapper.readValue(new String(bytes), clazz);
         } catch (IOException e) {
             e.printStackTrace();
         }

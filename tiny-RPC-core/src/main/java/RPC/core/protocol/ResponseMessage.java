@@ -16,6 +16,10 @@ public class ResponseMessage extends Message {
         return RESPONSE;
     }
 
+    public ResponseMessage() {
+
+    }
+
 //    @Override
 //    public Class<?> getClassType() {
 //        return ResponseMessage.class;

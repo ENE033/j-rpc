@@ -40,6 +40,10 @@ public class RequestMessage extends Message {
         return REQUEST;
     }
 
+    public RequestMessage() {
+
+    }
+
 //    @Override
 //    public Class<?> getClassType() {
 //        return RequestMessage.class;

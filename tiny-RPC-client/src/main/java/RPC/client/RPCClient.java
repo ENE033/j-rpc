@@ -69,7 +69,7 @@ public class RPCClient {
                             // 心跳机制
                             // pipeline.addLast(new IdleStateHandler(5, 5, 5, TimeUnit.MINUTES));
                             // 帧解码器
-                            pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 8, 4));
+                            pipeline.addLast(new LengthFieldBasedFrameDecoder(102400, 8, 4));
                             // 日志
                             // pipeline.addLast(new LoggingHandler());
                             // 协议

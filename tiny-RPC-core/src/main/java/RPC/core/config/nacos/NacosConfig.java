@@ -3,6 +3,8 @@ package RPC.core.config.nacos;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingFactory;
+import com.alibaba.nacos.client.config.NacosConfigService;
 import com.alibaba.nacos.client.config.listener.impl.PropertiesListener;
 
 import java.util.Map;
@@ -49,19 +51,6 @@ public class NacosConfig {
      * 延迟初始化，为了整合spring
      */
     public void init() {
-        // for test
-//        if (nacosRegistryAddress == null) {
-//            nacosRegistryAddress = "1.12.233.55:8848";
-//        }
-//        if (nacosConfigAddress == null) {
-//            nacosConfigAddress = "1.12.233.55:8848";
-//        }
-//        if (nacosConfigDataId == null) {
-//            nacosConfigDataId = "rpc.properties";
-//        }
-//        if (nacosConfigGroup == null) {
-//            nacosConfigGroup = "DEFAULT_GROUP";
-//        }
         try {
             configService = NacosFactory.createConfigService(nacosConfigAddress);
             String configs = configService.getConfig(nacosConfigDataId, nacosConfigGroup, 10000);
@@ -89,8 +78,24 @@ public class NacosConfig {
         throw new RuntimeException("该属性不存在");
     }
 
+    public String getConfigEnableAbleRetry(String key, int time) {
+        if (time == 0) {
+            throw new RuntimeException("该属性不存在");
+        }
+        if (properties.containsKey(key)) {
+            return properties.get(key);
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return getConfigEnableAbleRetry(key, time - 1);
+    }
+
+
     public Integer getConfigAsInt(String key) {
-        String value = getConfig(key);
+        String value = getConfigEnableAbleRetry(key, 3);
         return Integer.parseInt(value);
     }
 

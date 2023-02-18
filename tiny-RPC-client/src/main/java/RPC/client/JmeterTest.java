@@ -10,18 +10,22 @@ import org.apache.jmeter.samplers.SampleResult;
 
 public class JmeterTest implements JavaSamplerClient {
     TestService testService;
+    static ClientRPCConfig clientRPCConfig;
+    static RPCClientProxyFactory rpcClientProxyFactory;
 
-    @Override
-    public void setupTest(JavaSamplerContext javaSamplerContext) {
-        ClientRPCConfig clientRPCConfig = new ClientRPCConfig();
+    static {
+        clientRPCConfig = new ClientRPCConfig();
         clientRPCConfig.setNacosConfigAddress("1.12.233.55:8848");
         clientRPCConfig.setNacosRegistryAddress("1.12.233.55:8848");
         clientRPCConfig.setNacosConfigGroup("DEFAULT_GROUP");
         clientRPCConfig.setNacosConfigDataId("rpc.properties");
-        RPCClientProxyFactory rpcClientProxyFactory = new RPCClientProxyFactory(clientRPCConfig);
-        rpcClientProxyFactory.getProxy(TestService.class);
+        rpcClientProxyFactory = new RPCClientProxyFactory(clientRPCConfig);
+    }
 
-//        System.out.println("测试准备开始");
+
+    @Override
+    public void setupTest(JavaSamplerContext javaSamplerContext) {
+        testService = rpcClientProxyFactory.getProxy(TestService.class);
     }
 
     @Override
@@ -32,6 +36,8 @@ public class JmeterTest implements JavaSamplerClient {
         try {
             String result = testService.getAnswer("测试TPS");
 //            Integer result = testService.add();
+//            boolean result = testService.decCount();
+//            sampleResult.setResponseData(String.valueOf(result), "utf-8");
             sampleResult.setResponseData(result, "utf-8");
             sampleResult.setDataType(SampleResult.TEXT);
             sampleResult.setSuccessful(true);
@@ -46,7 +52,6 @@ public class JmeterTest implements JavaSamplerClient {
 
     @Override
     public void teardownTest(JavaSamplerContext javaSamplerContext) {
-//        System.out.println("测试结束");
     }
 
     @Override
