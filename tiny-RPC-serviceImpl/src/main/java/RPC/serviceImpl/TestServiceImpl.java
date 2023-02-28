@@ -6,10 +6,29 @@ import RPC.service.TestService;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @RPCService(beanName = "testService11")
 public class TestServiceImpl implements TestService {
-    public static int count = 100;
+    public static int count = 0;
+
+
+    @Override
+    public String CPUTask() {
+        count++;
+        return "CPU任务结束" + count;
+    }
+
+    @Override
+    public String IOTask() {
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "IO结果";
+    }
+
 
     @Override
     public boolean decCount() {

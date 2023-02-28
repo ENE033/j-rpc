@@ -16,7 +16,7 @@ public class WriteBackInAsync implements WriteBackStrategy {
     public static final ThreadPoolExecutor EXECUTOR_GROUP = new ThreadPoolExecutor(
             8,
             16,
-            5,
+            10,
             TimeUnit.SECONDS,
             new ArrayBlockingQueue<>(500000),
             new ThreadPoolExecutor.AbortPolicy());

@@ -8,7 +8,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-public class JmeterTest implements JavaSamplerClient {
+public class JmeterTest1 implements JavaSamplerClient {
     TestService testService;
     static ClientRPCConfig clientRPCConfig;
     static RPCClientProxyFactory rpcClientProxyFactory;
@@ -35,8 +35,8 @@ public class JmeterTest implements JavaSamplerClient {
         sampleResult.sampleStart();
         try {
 
-//            String result = testService.IOTask();
-            String result = testService.CPUTask();
+            String result = testService.IOTask();
+//            String result = testService.CPUTask();
 
 //            String result = testService.getAnswer("测试TPS");
 //            Integer result = testService.add();

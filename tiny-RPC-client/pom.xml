@@ -63,7 +63,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>RPC.client.JmeterTest</mainClass>
+                            <mainClass>RPC.client.JmeterTest1</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -80,6 +80,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 </project>
