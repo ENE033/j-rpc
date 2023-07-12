@@ -17,6 +17,5 @@ public class ResponseHandler extends SimpleChannelInboundHandler<ResponseMessage
         Object result = responseMessage.getResult();
         Promise<Object> promise = ResponsePromise.PROMISE_MAP.get(seq);
         promise.setSuccess(result);
-//        System.out.println(result);
     }
 }

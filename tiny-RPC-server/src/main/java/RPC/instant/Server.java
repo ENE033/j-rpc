@@ -5,6 +5,8 @@ import RPC.core.annotation.ServiceScan;
 import RPC.core.config.ServerRPCConfig;
 import RPC.server.RPCServer;
 
+import java.lang.invoke.MethodHandle;
+
 @ServiceScan(basePackage = "RPC.serviceImpl")
 public class Server {
     public static void main(String[] args) {

@@ -7,7 +7,7 @@ public class SeqCreator {
     private static final Random random = new Random();
     private static final BitSet bitSet = new BitSet();
 
-    public static Integer getSeq() {
+    public synchronized static Integer getSeq() {
         int seq;
         do {
             seq = random.nextInt(Integer.MAX_VALUE);

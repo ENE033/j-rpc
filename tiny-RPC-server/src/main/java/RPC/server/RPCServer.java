@@ -19,6 +19,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
                             // 心跳机制
                             // pipeline.addLast(new IdleStateHandler(5, 5, 5, TimeUnit.MINUTES));
                             // 帧解码器
-                            pipeline.addLast(new LengthFieldBasedFrameDecoder(102400, 8, 4));
+                            pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 8, 4));
                             // 日志
                             // pipeline.addLast(new LoggingHandler());
                             // 协议
