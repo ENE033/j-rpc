@@ -8,7 +8,7 @@ import RPC.core.promise.ResponsePromise;
 import RPC.core.protocol.RequestMessage;
 import RPC.core.proxy.ProxyCreatorAdapter;
 import RPC.core.proxy.ProxyCreatorMap;
-import RPC.util.SeqCreator;
+import RPC.util.SeqUtil;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class RPCClientProxyFactory {
                             return backed;
                         }
                         RequestMessage requestMessage = new RequestMessage();
-                        Integer seq = SeqCreator.getSeq();
+                        Integer seq = SeqUtil.getSeq();
                         requestMessage.setSeq(seq);
                         requestMessage.setInterfaceName(clazz.getCanonicalName());
                         requestMessage.setMethodName(method.getName());
@@ -74,6 +74,7 @@ public class RPCClientProxyFactory {
                         try {
                             promise.await();
                             ResponsePromise.PROMISE_MAP.remove(seq);
+                            SeqUtil.removeSeq(seq);
                             if (promise.isSuccess()) {
                                 Object result = promise.getNow();
                                 Class<?> returnType = method.getReturnType();
