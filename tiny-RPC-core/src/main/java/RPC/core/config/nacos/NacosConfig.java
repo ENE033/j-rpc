@@ -6,6 +6,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.client.config.NacosConfigService;
 import com.alibaba.nacos.client.config.listener.impl.PropertiesListener;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.Properties;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * nacos配置中心，获取配置中心的配置信息，监听配置信息的变动
  */
+@Slf4j
 public class NacosConfig {
     public static String SERIALIZE_TYPE = "serializer";
     public static String LOADBALANCE_TYPE = "loadBalance";
@@ -63,7 +65,11 @@ public class NacosConfig {
                 @Override
                 public void innerReceive(Properties properties) {
                     getProperties().clear();
-                    properties.forEach((k, v) -> getProperties().put((String) k, (String) v));
+                    log.info("收到参数修改通知,修改后的参数为");
+                    properties.forEach((k, v) -> {
+                        log.info("param:{},value:{}", k, v);
+                        getProperties().put((String) k, (String) v);
+                    });
                 }
             });
         } catch (NacosException e) {
