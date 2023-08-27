@@ -27,13 +27,13 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
 //    private static final EventExecutorGroup EXECUTOR_GROUP = new DefaultEventExecutorGroup(16);
 
-    public static final ThreadPoolExecutor EXECUTOR_GROUP = new ThreadPoolExecutor(
-            8,
-            16,
-            5,
-            TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(100),
-            new ThreadPoolExecutor.AbortPolicy());
+//    public static final ThreadPoolExecutor EXECUTOR_GROUP = new ThreadPoolExecutor(
+//            8,
+//            16,
+//            5,
+//            TimeUnit.SECONDS,
+//            new ArrayBlockingQueue<>(100),
+//            new ThreadPoolExecutor.AbortPolicy());
 
     public RequestHandler(ServiceController serviceController, ServerRPCConfig serverRpcConfig) {
         this.serviceController = serviceController;
@@ -75,15 +75,17 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
         Method finalMethod = method;
         Integer finalSeq = seq;
         writeBackStrategy.writeBack(() -> {
+            ResponseMessage responseMessage = new ResponseMessage();
+
             Object result = null;
             try {
                 result = finalMethod.invoke(obj, args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            } finally {
-                ResponseMessage responseMessage = new ResponseMessage();
                 responseMessage.setResult(result);
                 responseMessage.setResponseStatus(ResponseStatus.SUCCESS);
+            } catch (Throwable e) {
+                log.error("方法执行异常", e);
+                responseMessage.setResponseStatus(ResponseStatus.FAIL);
+            } finally {
                 responseMessage.setSeq(finalSeq);
                 channelHandlerContext.writeAndFlush(responseMessage);
             }

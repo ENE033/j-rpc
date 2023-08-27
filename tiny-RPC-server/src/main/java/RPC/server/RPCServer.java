@@ -49,7 +49,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
 
     NioEventLoopGroup sub = new NioEventLoopGroup();
 
-    private final EventExecutorGroup EXECUTOR_GROUP = new DefaultEventExecutorGroup(16);
+//    private final EventExecutorGroup EXECUTOR_GROUP = new DefaultEventExecutorGroup(16);
 
     @PostConstruct
     @Override

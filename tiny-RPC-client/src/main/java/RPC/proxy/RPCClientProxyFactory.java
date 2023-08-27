@@ -43,8 +43,9 @@ public class RPCClientProxyFactory {
 
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) {
-                        Class<?>[] argsClazz = args == null ? new Class[]{} : Arrays.stream(args).map(Object::getClass).collect(Collectors.toList()).toArray(new Class<?>[]{});
+//                        ?? Class<?>[] argsClazz = args == null ? new Class[]{} : Arrays.stream(args).map(Object::getClass).collect(Collectors.toList()).toArray(new Class<?>[]{});
 
+                        Class<?>[] argsClazz = method.getParameterTypes();
                         try {
                             clazz.getDeclaredMethod(method.getName(), argsClazz);
                         } catch (NoSuchMethodException e) {
@@ -76,8 +77,11 @@ public class RPCClientProxyFactory {
                             ResponsePromise.PROMISE_MAP.remove(seq);
                             SeqUtil.removeSeq(seq);
                             if (promise.isSuccess()) {
-                                Object result = promise.getNow();
                                 Class<?> returnType = method.getReturnType();
+                                Object result = promise.getNow();
+                                if (void.class.equals(returnType) || result == null) {
+                                    return null;
+                                }
                                 Class<?> resultClass = result.getClass();
                                 if (resultClass.isAssignableFrom(returnType)) {
                                     return result;
@@ -85,10 +89,10 @@ public class RPCClientProxyFactory {
                                     throw new RuntimeException("返回类型与预期不匹配");
                                 }
                             }
-                        } catch (Exception e) {
+                            throw promise.cause();
+                        } catch (Throwable e) {
                             throw new RuntimeException("rpc远程调用失败", e);
                         }
-                        return null;
                     }
                 });
 

@@ -43,7 +43,7 @@ public class JsonSerializer implements SerializerStrategy {
     @Override
     public <T> T deSerializer(Class<T> clazz, byte[] bytes) {
         try {
-            return objectMapper.readValue(new String(bytes), clazz);
+            return objectMapper.readValue(bytes, clazz);
         } catch (IOException e) {
             e.printStackTrace();
         }
