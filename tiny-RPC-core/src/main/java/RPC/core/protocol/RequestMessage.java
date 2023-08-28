@@ -4,39 +4,49 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * 字段说明：
+ * ifN->interfaceName：接口全限定名
+ * mN->mN：方法名
+ * aT->aT：参数类型数组
+ * a->a：参数数组
+ * to->timeOut：超时时间
+ * re->retry：是否重试
+ * reT->retryTime：重试次数
+ */
 @Data
 public class RequestMessage extends Message {
     /**
      * 调用的服务接口的全限定名
      */
-    public String interfaceName;
+    public String ifN;
     /**
      * 调用的方法名
      */
-    public String methodName;
+    public String mN;
     /**
      * 参数类型数组
      */
-    public Class<?>[] argsType;
+    public Class<?>[] aT;
     /**
      * 参数数组
      */
-    public Object[] args;
+    public Object[] a;
     /**
      * 超时时间，单位ms，默认1000ms
      */
-    public Integer timeOut = 1000;
+    public int to = 1000;
     /**
      * 是否重试，默认重试
      */
-    public boolean retry = true;
+    public boolean re = true;
     /**
      * 重试次数
      */
-    public Integer retryTime = 3;
+    public int reT = 3;
 
     @Override
-    public Integer getType() {
+    public byte getT() {
         return REQUEST;
     }
 

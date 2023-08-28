@@ -1,30 +1,31 @@
 package RPC.core.serializer.impl;
 
+import RPC.core.protocol.RequestMessage;
 import RPC.core.serializer.SerializerStrategy;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
+@Slf4j
 public class JsonSerializer implements SerializerStrategy {
 
     public ObjectMapper objectMapper = new ObjectMapper();
 
     public JsonSerializer() {
-//        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setTimeZone(TimeZone.getDefault());
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        objectMapper.setDateFormat(sdf);
         objectMapper.registerModule(new Jdk8Module());
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class JsonSerializer implements SerializerStrategy {
         try {
             return objectMapper.writeValueAsBytes(obj);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("序列化失败", e);
         }
         return null;
 //        JSONObject.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -43,11 +44,33 @@ public class JsonSerializer implements SerializerStrategy {
     @Override
     public <T> T deSerializer(Class<T> clazz, byte[] bytes) {
         try {
-            return objectMapper.readValue(bytes, clazz);
+            T message = objectMapper.readValue(bytes, clazz);
+            if (message != null && message.getClass().isAssignableFrom(RequestMessage.class)) {
+                handleRequestMessage((RequestMessage) message);
+            }
+            return message;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("反序列化失败", e);
         }
         return null;
 //        return JSON.parseObject(new String(bytes), clazz);
     }
+
+    private void handleRequestMessage(RequestMessage requestMessage) {
+        Class<?>[] argsType = requestMessage.getAT();
+        Object[] args = requestMessage.getA();
+        for (int i = 0; i < argsType.length; i++) {
+            if (args[i] == null) {
+                continue;
+            }
+            Class<?> aClass = argsType[i];
+            if (aClass == Date.class) {
+                args[i] = new Date((long) args[i]);
+            } else if (aClass == LocalDateTime.class) {
+                ArrayList<Integer> localDateTimeArgs = (ArrayList<Integer>) args[i];
+                args[i] = LocalDateTime.of(localDateTimeArgs.get(0), localDateTimeArgs.get(1), localDateTimeArgs.get(2), localDateTimeArgs.get(3), localDateTimeArgs.get(4), localDateTimeArgs.get(5), localDateTimeArgs.get(6));
+            }
+        }
+    }
+
 }

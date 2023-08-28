@@ -6,13 +6,18 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 字段说明：
+ * t->type：消息类型
+ * seq：消息的序列号
+ */
 @Data
 public abstract class Message implements Serializable {
-    private Integer type;
-    public Integer seq;
+    private byte t;
+    public int seq;
 
-    public static final Integer REQUEST = 1;
-    public static final Integer RESPONSE = 2;
+    public static final int REQUEST = 1;
+    public static final int RESPONSE = 2;
 
 //    public static final Map<Integer, Class<?>> mapper;
 //
@@ -27,7 +32,7 @@ public abstract class Message implements Serializable {
 //        return mapper.get(type);
     }
 
-    public abstract Integer getType();
+    public abstract byte getT();
 
 //    public abstract Class<?> getClassType();
 

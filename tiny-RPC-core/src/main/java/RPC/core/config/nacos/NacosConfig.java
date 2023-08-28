@@ -100,9 +100,14 @@ public class NacosConfig {
     }
 
 
-    public Integer getConfigAsInt(String key) {
+    public int getConfigAsInt(String key) {
         String value = getConfigEnableAbleRetry(key, 3);
         return Integer.parseInt(value);
+    }
+
+    public byte getConfigAsByte(String key) {
+        String value = getConfigEnableAbleRetry(key, 3);
+        return Byte.parseByte(value);
     }
 
     public String getNacosRegistryAddress() {

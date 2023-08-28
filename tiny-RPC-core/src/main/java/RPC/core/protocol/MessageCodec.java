@@ -1,6 +1,5 @@
 package RPC.core.protocol;
 
-import RPC.core.config.ServerRPCConfig;
 import RPC.core.config.nacos.NacosConfig;
 import RPC.core.serializer.SerializerStrategy;
 import RPC.core.serializer.SerializerMap;
@@ -10,10 +9,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 @ChannelHandler.Sharable
 public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
+
+    private final static byte[] wagz = "wagz".getBytes(StandardCharsets.UTF_8);
 
     private final NacosConfig nacosConfig;
 
@@ -25,12 +27,12 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
     protected void encode(ChannelHandlerContext channelHandlerContext, Message message, List<Object> list) throws Exception {
         ByteBuf buffer = channelHandlerContext.alloc().buffer();
         // 魔数
-        buffer.writeBytes("wagz".getBytes(StandardCharsets.UTF_8));
+        buffer.writeBytes(wagz);
         // 版本号
         buffer.writeByte(0);
         // 消息类型
-        buffer.writeByte(message.getType());
-        Integer serializeType = nacosConfig.getConfigAsInt(NacosConfig.SERIALIZE_TYPE);
+        buffer.writeByte(message.getT());
+        byte serializeType = nacosConfig.getConfigAsByte(NacosConfig.SERIALIZE_TYPE);
         // 序列化方式
         buffer.writeByte(serializeType);
         // 无意义
@@ -51,8 +53,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buf, List<Object> list) throws Exception {
         byte[] magic = new byte[4];
         buf.readBytes(magic);
-        String s = new String(magic);
-        if (!"wagz".equals(s)) {
+        if (!Arrays.equals(magic, wagz)) {
             // 魔数不同 todo
             return;
         }

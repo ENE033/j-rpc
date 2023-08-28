@@ -7,6 +7,8 @@ public interface TestService1 {
 
     void doSomething();
 
-    String timeTest(Date date, LocalDateTime localDateTime);
+    void timeTest(Date date, LocalDateTime localDateTime);
+
+    String timeTest1(Date date, LocalDateTime localDateTime);
 
 }

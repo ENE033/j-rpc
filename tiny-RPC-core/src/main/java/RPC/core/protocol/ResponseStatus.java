@@ -3,16 +3,16 @@ package RPC.core.protocol;
 
 public enum ResponseStatus {
 
-    SUCCESS("成功", 200),
+    S("成功", 200),
 
-    FAIL("失败", 400);
+    F("失败", 400);
 
 
     private String msg;
-    private Integer code;
+    private int code;
 
 
-    ResponseStatus(String msg, Integer code) {
+    ResponseStatus(String msg, int code) {
         this.msg = msg;
         this.code = code;
     }
@@ -25,11 +25,11 @@ public enum ResponseStatus {
         this.msg = msg;
     }
 
-    public Integer getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(Integer code) {
+    public void setCode(int code) {
         this.code = code;
     }
 }

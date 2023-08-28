@@ -12,11 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> {
@@ -45,17 +41,17 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
         Integer seq = null;
 
         // 服务名
-        String interfaceName = requestMessage.interfaceName;
+        String interfaceName = requestMessage.ifN;
         // 方法名
-        String methodName = requestMessage.methodName;
+        String methodName = requestMessage.mN;
         // 参数类型
-        Class<?>[] argsType = requestMessage.argsType;
+        Class<?>[] argsType = requestMessage.aT;
         // 参数
-        Object[] args = requestMessage.args;
+        Object[] args = requestMessage.a;
         // 消息的序列号
         seq = requestMessage.seq;
         // 超时时间
-        Integer timeOut = requestMessage.timeOut;
+        int timeOut = requestMessage.to;
 
         Object obj = serviceController.getService(interfaceName);
 
@@ -65,7 +61,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
         try {
             method = clazz.getDeclaredMethod(methodName, argsType);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            log.error("服务端没有找到对应的方法", e);
         }
 
         boolean syncRPC = method.isAnnotationPresent(SyncRPC.class);
@@ -77,14 +73,20 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
         writeBackStrategy.writeBack(() -> {
             ResponseMessage responseMessage = new ResponseMessage();
 
-            Object result = null;
             try {
-                result = finalMethod.invoke(obj, args);
-                responseMessage.setResult(result);
-                responseMessage.setResponseStatus(ResponseStatus.SUCCESS);
+                Object result = finalMethod.invoke(obj, args);
+                responseMessage.setS(ResponseStatus.S);
+                responseMessage.setR(result);
             } catch (Throwable e) {
-                log.error("方法执行异常", e);
-                responseMessage.setResponseStatus(ResponseStatus.FAIL);
+                log.error("服务端方法执行异常", e);
+                responseMessage.setS(ResponseStatus.F);
+                responseMessage.setR("服务端方法执行异常");
+//                responseMessage.setE(e.getCause());
+//                e.getCause();
+//                StackTraceElement[] stackTrace = e.getCause().getStackTrace();
+//                for (StackTraceElement stackTraceElement : stackTrace) {
+//                    System.out.println(stackTraceElement.toString());
+//                }
             } finally {
                 responseMessage.setSeq(finalSeq);
                 channelHandlerContext.writeAndFlush(responseMessage);

@@ -4,15 +4,23 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+
+/**
+ * 字段说明：
+ * s->status
+ * r->result
+ */
 @Data
 public class ResponseMessage extends Message {
 
-    public ResponseStatus responseStatus;
+    public ResponseStatus s;
 
-    public Object result;
+    public Object r;
+//
+//    public Throwable e;
 
     @Override
-    public Integer getType() {
+    public byte getT() {
         return RESPONSE;
     }
 

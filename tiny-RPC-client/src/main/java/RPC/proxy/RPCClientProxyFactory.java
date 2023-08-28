@@ -4,6 +4,7 @@ import RPC.client.RPCClient;
 import RPC.core.ServiceRegistry;
 import RPC.core.config.ClientRPCConfig;
 import RPC.core.config.nacos.NacosConfig;
+import RPC.core.exception.RPCParamException;
 import RPC.core.promise.ResponsePromise;
 import RPC.core.protocol.RequestMessage;
 import RPC.core.proxy.ProxyCreatorAdapter;
@@ -16,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class RPCClientProxyFactory {
@@ -43,7 +42,7 @@ public class RPCClientProxyFactory {
 
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) {
-//                        ?? Class<?>[] argsClazz = args == null ? new Class[]{} : Arrays.stream(args).map(Object::getClass).collect(Collectors.toList()).toArray(new Class<?>[]{});
+//                        ?? Class<?>[] argsClazz = a == null ? new Class[]{} : Arrays.stream(a).map(Object::getClass).collect(Collectors.toList()).toArray(new Class<?>[]{});
 
                         Class<?>[] argsClazz = method.getParameterTypes();
                         try {
@@ -60,10 +59,10 @@ public class RPCClientProxyFactory {
                         RequestMessage requestMessage = new RequestMessage();
                         Integer seq = SeqUtil.getSeq();
                         requestMessage.setSeq(seq);
-                        requestMessage.setInterfaceName(clazz.getCanonicalName());
-                        requestMessage.setMethodName(method.getName());
-                        requestMessage.setArgsType(argsClazz);
-                        requestMessage.setArgs(args);
+                        requestMessage.setIfN(clazz.getCanonicalName());
+                        requestMessage.setMN(method.getName());
+                        requestMessage.setAT(argsClazz);
+                        requestMessage.setA(args);
 
                         // 获取一个实例的地址
                         InetSocketAddress serviceAddress = serviceRegistry.getServiceAddress(clazz.getCanonicalName(), requestMessage);
@@ -86,7 +85,7 @@ public class RPCClientProxyFactory {
                                 if (resultClass.isAssignableFrom(returnType)) {
                                     return result;
                                 } else {
-                                    throw new RuntimeException("返回类型与预期不匹配");
+                                    throw new RPCParamException("返回类型与预期不匹配");
                                 }
                             }
                             throw promise.cause();

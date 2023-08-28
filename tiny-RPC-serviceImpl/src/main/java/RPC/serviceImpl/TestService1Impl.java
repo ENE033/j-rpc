@@ -15,9 +15,16 @@ public class TestService1Impl implements TestService1 {
 
 
     @Override
-    public String timeTest(Date date, LocalDateTime localDateTime) {
+    public void timeTest(Date date, LocalDateTime localDateTime) {
         System.out.println(date);
         System.out.println(localDateTime);
-        return "111";
+    }
+
+    @Override
+    public String timeTest1(Date date, LocalDateTime localDateTime) {
+        System.out.println(date);
+        System.out.println(localDateTime);
+//        date.getTime();
+        return date + "::" + localDateTime;
     }
 }
