@@ -109,7 +109,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
         try {
             mainClass = Thread.currentThread().getContextClassLoader().loadClass(mainClassName);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.error("获取不到主启动类", e);
         }
         assert mainClass != null;
         if (!mainClass.isAnnotationPresent(ServiceScan.class)) {
