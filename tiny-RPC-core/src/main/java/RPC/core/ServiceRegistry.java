@@ -23,7 +23,7 @@ public class ServiceRegistry {
     public ServiceRegistry(NacosConfig nacosConfig) {
         // for test
 //        if (serverRpcConfig.getNacosRegistryAddress() == null) {
-//            serverRpcConfig.setNacosRegistryAddress("1.12.233.55:8848");
+//            serverRpcConfig.setNacosRegistryAddress("139.159.207.128:8848");
 //        }
         this.nacosConfig = nacosConfig;
         try {

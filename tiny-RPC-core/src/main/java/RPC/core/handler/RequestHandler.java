@@ -1,12 +1,10 @@
 package RPC.core.handler;
 
-import RPC.core.annotation.SyncRPC;
+import RPC.core.chain.Invocation;
+import RPC.core.chain.InvocationWrapper;
+import RPC.core.chain.ServerFilterChain;
 import RPC.core.config.ServerRPCConfig;
-import RPC.core.writeBack.WriteBackMap;
-import RPC.core.writeBack.WriteBackStrategy;
 import RPC.core.protocol.RequestMessage;
-import RPC.core.protocol.ResponseMessage;
-import RPC.core.protocol.ResponseStatus;
 import RPC.core.ServiceController;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -21,16 +19,6 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     private final ServerRPCConfig serverRpcConfig;
 
-//    private static final EventExecutorGroup EXECUTOR_GROUP = new DefaultEventExecutorGroup(16);
-
-//    public static final ThreadPoolExecutor EXECUTOR_GROUP = new ThreadPoolExecutor(
-//            8,
-//            16,
-//            5,
-//            TimeUnit.SECONDS,
-//            new ArrayBlockingQueue<>(100),
-//            new ThreadPoolExecutor.AbortPolicy());
-
     public RequestHandler(ServiceController serviceController, ServerRPCConfig serverRpcConfig) {
         this.serviceController = serviceController;
         this.serverRpcConfig = serverRpcConfig;
@@ -38,60 +26,47 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RequestMessage requestMessage) throws Exception {
-        Integer seq = null;
+        Invocation invocation = buildInvocation(requestMessage);
 
-        // 服务名
-        String interfaceName = requestMessage.ifN;
-        // 方法名
-        String methodName = requestMessage.mN;
-        // 参数类型
-        Class<?>[] argsType = requestMessage.aT;
-        // 参数
-        Object[] args = requestMessage.a;
-        // 消息的序列号
-        seq = requestMessage.seq;
-        // 超时时间
-        int timeOut = requestMessage.to;
+        InvocationWrapper invocationWrapper = wrapperInvocation(invocation, channelHandlerContext);
 
-        Object obj = serviceController.getService(interfaceName);
+        ServerFilterChain.handler(invocationWrapper);
 
-        Class<?> clazz = serviceController.getServiceClass(interfaceName);
+        invocationWrapper.execute();
+    }
+
+    private Invocation buildInvocation(RequestMessage requestMessage) {
+        Invocation invocation = new Invocation();
+        invocation.setSeq(requestMessage.getSeq());
+        invocation.setArgs(requestMessage.getA());
+        invocation.setArgsType(requestMessage.getAT());
+        invocation.setMethodName(requestMessage.getMN());
+        invocation.setInterfaceName(requestMessage.getIfN());
+        return invocation;
+    }
+
+    private InvocationWrapper wrapperInvocation(Invocation invocation, ChannelHandlerContext channelHandlerContext) {
+
+        InvocationWrapper invocationWrapper = new InvocationWrapper();
+
+        invocationWrapper.setInv(invocation);
+
+        invocationWrapper.setObj(serviceController.getService(invocation.getInterfaceName()));
+
+        Class<?> clazz = serviceController.getServiceClass(invocation.getInterfaceName());
+        invocationWrapper.setClazz(clazz);
 
         Method method = null;
         try {
-            method = clazz.getDeclaredMethod(methodName, argsType);
+            method = clazz.getDeclaredMethod(invocation.getMethodName(), invocation.getArgsType());
         } catch (NoSuchMethodException e) {
             log.error("服务端没有找到对应的方法", e);
         }
+        invocationWrapper.setMethod(method);
 
-        boolean syncRPC = method.isAnnotationPresent(SyncRPC.class);
+        invocationWrapper.setChannelHandlerContext(channelHandlerContext);
 
-        WriteBackStrategy writeBackStrategy = WriteBackMap.get(syncRPC ? WriteBackStrategy.SYNC : WriteBackStrategy.ASYNC);
-
-        Method finalMethod = method;
-        Integer finalSeq = seq;
-        writeBackStrategy.writeBack(() -> {
-            ResponseMessage responseMessage = new ResponseMessage();
-
-            try {
-                Object result = finalMethod.invoke(obj, args);
-                responseMessage.setS(ResponseStatus.S);
-                responseMessage.setR(result);
-            } catch (Throwable e) {
-                log.error("服务端方法执行异常", e);
-                responseMessage.setS(ResponseStatus.F);
-                responseMessage.setR("服务端方法执行异常");
-//                responseMessage.setE(e.getCause());
-//                e.getCause();
-//                StackTraceElement[] stackTrace = e.getCause().getStackTrace();
-//                for (StackTraceElement stackTraceElement : stackTrace) {
-//                    System.out.println(stackTraceElement.toString());
-//                }
-            } finally {
-                responseMessage.setSeq(finalSeq);
-                channelHandlerContext.writeAndFlush(responseMessage);
-            }
-        });
-
+        return invocationWrapper;
     }
+
 }

@@ -1,13 +1,12 @@
-package RPC.core.writeBack.impl;
+package RPC.core.execute.impl;
 
-import RPC.core.writeBack.WriteBackStrategy;
+import RPC.core.execute.ExecuteStrategy;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class WriteBackInSync implements WriteBackStrategy {
+public class ExecuteInSync implements ExecuteStrategy {
 
     private final static ThreadPoolExecutor SINGLE_EXECUTOR_GROUP =
             new ThreadPoolExecutor(
@@ -21,5 +20,10 @@ public class WriteBackInSync implements WriteBackStrategy {
     @Override
     public void writeBack(Runnable task) {
         SINGLE_EXECUTOR_GROUP.execute(task);
+    }
+
+    @Override
+    public String toString() {
+        return "Sync";
     }
 }
