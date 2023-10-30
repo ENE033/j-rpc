@@ -11,10 +11,10 @@ import java.lang.invoke.MethodHandle;
 public class Server {
     public static void main(String[] args) {
         ServerRPCConfig serverRPCConfig = new ServerRPCConfig();
-        serverRPCConfig.setExposedHost("1.12.233.55");
+        serverRPCConfig.setExposedHost("139.159.207.128");
         serverRPCConfig.setNettyPort(7888);
-        serverRPCConfig.setNacosConfigAddress("1.12.233.55:8848");
-        serverRPCConfig.setNacosRegistryAddress("1.12.233.55:8848");
+        serverRPCConfig.setNacosConfigAddress("139.159.207.128:8848");
+        serverRPCConfig.setNacosRegistryAddress("139.159.207.128:8848");
         serverRPCConfig.setNacosConfigGroup("DEFAULT_GROUP");
         serverRPCConfig.setNacosConfigDataId("rpc.properties");
         RPCServer rpcServer = new RPCServer(serverRPCConfig);

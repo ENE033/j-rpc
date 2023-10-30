@@ -15,8 +15,8 @@ public class JmeterTest implements JavaSamplerClient {
 
     static {
         clientRPCConfig = new ClientRPCConfig();
-        clientRPCConfig.setNacosConfigAddress("1.12.233.55:8848");
-        clientRPCConfig.setNacosRegistryAddress("1.12.233.55:8848");
+        clientRPCConfig.setNacosConfigAddress("139.159.207.128:8848");
+        clientRPCConfig.setNacosRegistryAddress("139.159.207.128:8848");
         clientRPCConfig.setNacosConfigGroup("DEFAULT_GROUP");
         clientRPCConfig.setNacosConfigDataId("rpc.properties");
         rpcClientProxyFactory = new RPCClientProxyFactory(clientRPCConfig);
@@ -35,13 +35,13 @@ public class JmeterTest implements JavaSamplerClient {
         sampleResult.sampleStart();
         try {
 
-//            String result = testService.IOTask();
+//            String r = testService.IOTask();
             String result = testService.CPUTask();
 
-//            String result = testService.getAnswer("测试TPS");
-//            Integer result = testService.add();
-//            boolean result = testService.decCount();
-//            sampleResult.setResponseData(String.valueOf(result), "utf-8");
+//            String r = testService.getAnswer("测试TPS");
+//            Integer r = testService.add();
+//            boolean r = testService.decCount();
+//            sampleResult.setResponseData(String.valueOf(r), "utf-8");
             sampleResult.setResponseData(result, "utf-8");
             sampleResult.setDataType(SampleResult.TEXT);
             sampleResult.setSuccessful(true);

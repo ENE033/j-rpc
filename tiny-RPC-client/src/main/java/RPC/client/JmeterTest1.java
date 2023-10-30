@@ -3,20 +3,25 @@ package RPC.client;
 import RPC.core.config.ClientRPCConfig;
 import RPC.proxy.RPCClientProxyFactory;
 import RPC.service.TestService;
+import RPC.service.TestService1;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 public class JmeterTest1 implements JavaSamplerClient {
     TestService testService;
+    TestService1 testService1;
     static ClientRPCConfig clientRPCConfig;
     static RPCClientProxyFactory rpcClientProxyFactory;
 
     static {
         clientRPCConfig = new ClientRPCConfig();
-        clientRPCConfig.setNacosConfigAddress("1.12.233.55:8848");
-        clientRPCConfig.setNacosRegistryAddress("1.12.233.55:8848");
+        clientRPCConfig.setNacosConfigAddress("139.159.207.128:8848");
+        clientRPCConfig.setNacosRegistryAddress("139.159.207.128:8848");
         clientRPCConfig.setNacosConfigGroup("DEFAULT_GROUP");
         clientRPCConfig.setNacosConfigDataId("rpc.properties");
         rpcClientProxyFactory = new RPCClientProxyFactory(clientRPCConfig);
@@ -26,6 +31,7 @@ public class JmeterTest1 implements JavaSamplerClient {
     @Override
     public void setupTest(JavaSamplerContext javaSamplerContext) {
         testService = rpcClientProxyFactory.getProxy(TestService.class);
+        testService1 = rpcClientProxyFactory.getProxy(TestService1.class);
     }
 
     @Override
@@ -34,14 +40,14 @@ public class JmeterTest1 implements JavaSamplerClient {
 
         sampleResult.sampleStart();
         try {
+//            String r = testService1.timeTest1(new Date(), LocalDateTime.now());
+//            String r = testService.IOTask();
+//            String r = testService.CPUTask();
 
-            String result = testService.IOTask();
-//            String result = testService.CPUTask();
-
-//            String result = testService.getAnswer("测试TPS");
-//            Integer result = testService.add();
-//            boolean result = testService.decCount();
-//            sampleResult.setResponseData(String.valueOf(result), "utf-8");
+            String result = testService.getAnswer("测试TPS");
+//            Integer r = testService.add();
+//            boolean r = testService.decCount();
+//            sampleResult.setResponseData(String.valueOf(r), "utf-8");
             sampleResult.setResponseData(result, "utf-8");
             sampleResult.setDataType(SampleResult.TEXT);
             sampleResult.setSuccessful(true);
