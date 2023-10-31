@@ -19,9 +19,12 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     private final ServerRPCConfig serverRpcConfig;
 
+    private final ServerFilterChain serverFilterChain;
+
     public RequestHandler(ServiceController serviceController, ServerRPCConfig serverRpcConfig) {
         this.serviceController = serviceController;
         this.serverRpcConfig = serverRpcConfig;
+        this.serverFilterChain = new ServerFilterChain();
     }
 
     @Override
@@ -30,7 +33,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
         InvocationWrapper invocationWrapper = wrapperInvocation(invocation, channelHandlerContext);
 
-        ServerFilterChain.handler(invocationWrapper);
+        serverFilterChain.handler(invocationWrapper);
 
         invocationWrapper.execute();
     }

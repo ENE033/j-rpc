@@ -1,20 +1,16 @@
 package RPC.core.chain;
 
 import RPC.core.annotation.FilterComponent;
-import RPC.core.chain.AbstractFilterChain;
-import RPC.core.chain.ChainNode;
-import RPC.core.chain.Filter;
-import RPC.core.chain.InvocationWrapper;
 import RPC.core.constants.CommonConstant;
 
 import java.util.Objects;
 
 public class ServerFilterChain extends AbstractFilterChain {
 
-    protected static ChainNode head = new ChainNode(new AbstractFilterChain.HeadFiler());
-    protected static ChainNode tail = new ChainNode(new AbstractFilterChain.TailFiler());
+    protected ChainNode head = new ChainNode(new AbstractFilterChain.HeadFiler());
+    protected ChainNode tail = new ChainNode(new AbstractFilterChain.TailFiler());
 
-    static {
+    public ServerFilterChain() {
         ChainNode last = tail;
         for (int i = sortedClassList.size() - 1; i >= 0; i--) {
             Class<?> aClass = sortedClassList.get(i);
@@ -33,7 +29,7 @@ public class ServerFilterChain extends AbstractFilterChain {
         head.setNext(last);
     }
 
-    public static void handler(InvocationWrapper inv) {
+    public void handler(InvocationWrapper inv) {
         head.invoke(inv);
     }
 

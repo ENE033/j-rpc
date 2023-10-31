@@ -1,26 +1,23 @@
 package RPC.core.chain;
 
 import RPC.core.annotation.FilterComponent;
-import RPC.core.chain.AbstractFilterChain;
-import RPC.core.chain.Filter;
 import RPC.core.constants.CommonConstant;
-import cn.hutool.core.util.ClassUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class ClientFilterChain extends AbstractFilterChain {
 
-    protected static List<Filter> filters = new ArrayList<>();
+    protected ChainNode head = new ChainNode(new AbstractFilterChain.HeadFiler());
+    protected ChainNode tail = new ChainNode(new AbstractFilterChain.TailFiler());
 
-    static {
-        for (Class<?> aClass : sortedClassList) {
+    public ClientFilterChain() {
+        ChainNode last = tail;
+        for (int i = sortedClassList.size() - 1; i >= 0; i--) {
+            Class<?> aClass = sortedClassList.get(i);
             FilterComponent annotation = aClass.getAnnotation(FilterComponent.class);
             if (Objects.equals(annotation.group(), CommonConstant.CLIENT)) {
                 try {
-                    filters.add((Filter) aClass.newInstance());
+                    Filter filter = (Filter) aClass.newInstance();
+                    last = new ChainNode(last, filter);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
@@ -28,7 +25,10 @@ public class ClientFilterChain extends AbstractFilterChain {
                 }
             }
         }
-
+        head.setNext(last);
     }
 
+    public void handler(InvocationWrapper inv) {
+        head.invoke(inv);
+    }
 }

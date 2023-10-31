@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 责任链抽象，需要确保每个过滤器线程安全的
+ */
 public abstract class AbstractFilterChain implements FilterChain {
 
-    private static final Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation("RPC.core.chain", FilterComponent.class);
-    public static List<Class<?>> sortedClassList;
+    private final Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation("RPC.core.chain", FilterComponent.class);
+    public List<Class<?>> sortedClassList;
 
     @Slf4j
     public static class HeadFiler implements Filter {
@@ -34,7 +37,7 @@ public abstract class AbstractFilterChain implements FilterChain {
         }
     }
 
-    static {
+    public AbstractFilterChain() {
         sortedClassList = classes.stream().sorted((a, b) -> {
             FilterComponent aAnnotation = a.getAnnotation(FilterComponent.class);
             FilterComponent bAnnotation = b.getAnnotation(FilterComponent.class);
