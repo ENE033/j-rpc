@@ -1,9 +1,13 @@
 package RPC.core;
 
+import RPC.core.chain.Invocation;
+import RPC.core.chain.InvocationWrapper;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 3、客户端请求的适配，客户端只能使用接口全限定名发起调用，由本类负责接口全限定名与beanName之间的适配
  * 4、防止重复加入相同服务
  */
+@Slf4j
 public class ServiceController {
 
     private final ApplicationContext applicationContext;
@@ -25,16 +30,19 @@ public class ServiceController {
 
     /**
      * 不用spring框架时才使用，用了spring框架之后直接使用ioc容器来作为serviceMap
+     * 饿汉式
      */
-    public Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    public Map<String, Object> serviceMap = new HashMap<>();
 
     /**
      * 用于服务端放射获取方法对象
+     * 饿汉式
      */
-    public Map<String, Class<?>> classMap = new ConcurrentHashMap<>();
+    public Map<String, Class<?>> classMap = new HashMap<>();
 
     /**
      * 用于避免重复加入服务
+     * 饿汉式
      */
     public Set<Class<?>> classSet = new HashSet<>();
 
@@ -42,9 +50,14 @@ public class ServiceController {
      * interfaceName->beanName的映射
      * 1、用于判断有没有使用beanName作为别名
      * 2、用于做客户端请求的适配器，客户端只传入接口的全限定名，由本类的beanNameMap进行适配
+     * 饿汉式
      */
     public Map<String, String> beanNameMap = new ConcurrentHashMap<>();
 
+    /**
+     * 懒汉式
+     */
+    private final Map<String, Method> methodMap = new ConcurrentHashMap<>(128);
 
 //    public static Map<String, Map<String, Method>> METHOD_MAP = new ConcurrentHashMap<>();
 
@@ -112,6 +125,26 @@ public class ServiceController {
             }
         }
         throw new RuntimeException("不存在这个服务");
+    }
+
+
+    public Method getMethod(Class<?> clazz, String methodCanonicalName, Class<?>[] argsType) {
+        StringJoiner stringJoiner = new StringJoiner("|");
+        stringJoiner.add(methodCanonicalName);
+        for (Class<?> aClass : argsType) {
+            stringJoiner.add(aClass.getCanonicalName());
+        }
+        String methodKey = stringJoiner.toString();
+        Method method;
+        if ((method = methodMap.get(methodKey)) == null) {
+            try {
+                method = clazz.getMethod(methodCanonicalName, argsType);
+                methodMap.putIfAbsent(methodKey, method);
+            } catch (NoSuchMethodException e) {
+                log.error("服务端没有找到对应的方法", e);
+            }
+        }
+        return method;
     }
 
 }

@@ -23,7 +23,7 @@ public abstract class AbstractFilterChain implements FilterChain {
     public static class HeadFiler implements Filter {
         @Override
         public void invoke(ChainNode nextNode, InvocationWrapper inv) {
-            log.info("责任链开始执行，InvocationWrapper：" + JSONObject.toJSONString(inv));
+            log.info("责任链开始执行，InvocationWrapper：{}", JSONObject.toJSONString(inv));
             nextNode.invoke(inv);
         }
     }
@@ -32,7 +32,7 @@ public abstract class AbstractFilterChain implements FilterChain {
     public static class TailFiler implements Filter {
         @Override
         public void invoke(ChainNode nextNode, InvocationWrapper inv) {
-            log.info("责任链到达链尾，InvocationWrapper：" + JSONObject.toJSONString(inv));
+            log.info("责任链到达链尾，InvocationWrapper：{}", JSONObject.toJSONString(inv));
 
         }
     }

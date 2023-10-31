@@ -15,8 +15,7 @@ public class ExecuteFilter implements SFilter {
     @Override
     public void invoke(ChainNode nextNode, InvocationWrapper inv) {
         Method method = inv.getMethod();
-        boolean syncRPC = method.isAnnotationPresent(SyncRPC.class);
-        ExecuteStrategy executeStrategy = ExecuteStrategyMap.get(syncRPC ? ExecuteStrategy.SYNC : ExecuteStrategy.ASYNC);
+        ExecuteStrategy executeStrategy = ExecuteStrategyMap.get(method.isAnnotationPresent(SyncRPC.class) ? ExecuteStrategy.SYNC : ExecuteStrategy.ASYNC);
         inv.setExecuteStrategy(executeStrategy);
         nextNode.invoke(inv);
     }

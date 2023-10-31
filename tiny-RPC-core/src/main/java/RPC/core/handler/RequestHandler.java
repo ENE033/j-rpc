@@ -11,6 +11,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> {
@@ -29,9 +31,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RequestMessage requestMessage) throws Exception {
-        Invocation invocation = buildInvocation(requestMessage);
-
-        InvocationWrapper invocationWrapper = wrapperInvocation(invocation, channelHandlerContext);
+        InvocationWrapper invocationWrapper = wrapperInvocation(buildInvocation(requestMessage), channelHandlerContext);
 
         serverFilterChain.handler(invocationWrapper);
 
@@ -49,26 +49,14 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
     }
 
     private InvocationWrapper wrapperInvocation(Invocation invocation, ChannelHandlerContext channelHandlerContext) {
-
         InvocationWrapper invocationWrapper = new InvocationWrapper();
-
         invocationWrapper.setInv(invocation);
-
         invocationWrapper.setObj(serviceController.getService(invocation.getInterfaceName()));
-
         Class<?> clazz = serviceController.getServiceClass(invocation.getInterfaceName());
         invocationWrapper.setClazz(clazz);
-
-        Method method = null;
-        try {
-            method = clazz.getDeclaredMethod(invocation.getMethodName(), invocation.getArgsType());
-        } catch (NoSuchMethodException e) {
-            log.error("服务端没有找到对应的方法", e);
-        }
+        Method method = serviceController.getMethod(clazz, invocation.getMethodName(), invocation.getArgsType());
         invocationWrapper.setMethod(method);
-
         invocationWrapper.setChannelHandlerContext(channelHandlerContext);
-
         return invocationWrapper;
     }
 
