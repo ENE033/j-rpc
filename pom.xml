@@ -8,11 +8,11 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>tiny-RPC-core</module>
-        <module>tiny-RPC-server</module>
-        <module>tiny-RPC-client</module>
-        <module>tiny-RPC-service</module>
-        <module>tiny-RPC-serviceImpl</module>
+        <module>J-RPC-core</module>
+        <module>J-RPC-server</module>
+        <module>J-RPC-client</module>
+        <module>J-RPC-service</module>
+        <module>J-RPC-serviceImpl</module>
     </modules>
 
     <properties>
