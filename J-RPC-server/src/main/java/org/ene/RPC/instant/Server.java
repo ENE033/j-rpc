@@ -2,7 +2,7 @@ package org.ene.RPC.instant;
 
 import org.ene.RPC.core.annotation.ServiceScan;
 import org.ene.RPC.core.config.ServerRPCConfig;
-import org.ene.RPC.server.RPCServer;
+import org.ene.RPC.server.JRPCServer;
 
 @ServiceScan(basePackage = "org.ene.RPC.serviceImpl")
 public class Server {
@@ -14,7 +14,7 @@ public class Server {
         serverRPCConfig.setNacosRegistryAddress("139.159.207.128:8848");
         serverRPCConfig.setNacosConfigGroup("DEFAULT_GROUP");
         serverRPCConfig.setNacosConfigDataId("rpc.properties");
-        RPCServer rpcServer = new RPCServer(serverRPCConfig);
-        rpcServer.run();
+        JRPCServer jRPCServer = new JRPCServer(serverRPCConfig);
+        jRPCServer.run();
     }
 }

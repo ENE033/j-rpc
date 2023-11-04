@@ -4,6 +4,7 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.client.config.listener.impl.PropertiesListener;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * nacos配置中心，获取配置中心的配置信息，监听配置信息的变动
  */
 @Slf4j
+@Data
 public class NacosConfig {
     public static String SERIALIZE_TYPE = "serializer";
     public static String LOADBALANCE_TYPE = "loadBalance";
@@ -107,42 +109,4 @@ public class NacosConfig {
         String value = getConfigEnableAbleRetry(key, 3);
         return Byte.parseByte(value);
     }
-
-    public String getNacosRegistryAddress() {
-        return nacosRegistryAddress;
-    }
-
-    public void setNacosRegistryAddress(String nacosRegistryAddress) {
-        this.nacosRegistryAddress = nacosRegistryAddress;
-    }
-
-    public String getNacosConfigAddress() {
-        return nacosConfigAddress;
-    }
-
-    public void setNacosConfigAddress(String nacosConfigAddress) {
-        this.nacosConfigAddress = nacosConfigAddress;
-    }
-
-    public String getNacosConfigDataId() {
-        return nacosConfigDataId;
-    }
-
-    public void setNacosConfigDataId(String nacosConfigDataId) {
-        this.nacosConfigDataId = nacosConfigDataId;
-    }
-
-    public String getNacosConfigGroup() {
-        return nacosConfigGroup;
-    }
-
-    public void setNacosConfigGroup(String nacosConfigGroup) {
-        this.nacosConfigGroup = nacosConfigGroup;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-
 }

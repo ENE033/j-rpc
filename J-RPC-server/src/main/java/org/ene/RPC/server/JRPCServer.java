@@ -23,10 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
+import java.util.Collections;
 
 
 @Slf4j
-public class RPCServer extends AbstractRPCServer implements Runnable, ServiceScanner {
+public class JRPCServer extends AbstractRPCServer implements Runnable, ServiceScanner {
 
     private final ServerRPCConfig serverRpcConfig;
 
@@ -34,7 +35,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
 
     private ServiceController serviceController;
 
-    public RPCServer(ServerRPCConfig serverRpcConfig) {
+    public JRPCServer(ServerRPCConfig serverRpcConfig) {
         this.serverRpcConfig = serverRpcConfig;
         this.serverRpcConfig.init();
     }
@@ -45,12 +46,16 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
 
 //    private final EventExecutorGroup EXECUTOR_GROUP = new DefaultEventExecutorGroup(16);
 
+    // 整合spring的情况下，不要调用run，由PostConstruct来自动实现，否则将service将无法注入到ioc容器，因为感知不到
     @PostConstruct
     @Override
     public void run() {
         try {
             // 初始化，用于扩展
-            init();
+            if (!init()) {
+                log.warn("rpc服务启动重复");
+                return;
+            }
             serviceRegistry = new ServiceRegistry(serverRpcConfig);
             serviceController = new ServiceController(applicationContext);
             // 扫描服务，将本机ip和netty服务器的端口暴露
@@ -81,7 +86,7 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
                 main.shutdownGracefully();
                 sub.shutdownGracefully();
             });
-
+            stared();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,12 +111,17 @@ public class RPCServer extends AbstractRPCServer implements Runnable, ServiceSca
             log.error("获取不到主启动类", e);
         }
         assert mainClass != null;
-        if (!mainClass.isAnnotationPresent(ServiceScan.class)) {
-            throw new RuntimeException("主启动类中没有指定服务扫描路径");
+//        if (!mainClass.isAnnotationPresent(ServiceScan.class)) {
+//            throw new RuntimeException("主启动类中没有指定服务扫描路径");
+//        }
+        String[] basePackages;
+        if (mainClass.isAnnotationPresent(ServiceScan.class)) {
+            ServiceScan annotation = mainClass.getAnnotation(ServiceScan.class);
+            basePackages = annotation.basePackage();
+        } else {
+            basePackages = new String[]{ClassUtil.getPackage(mainClass)};
         }
 
-        ServiceScan annotation = mainClass.getAnnotation(ServiceScan.class);
-        String[] basePackages = annotation.basePackage();
         for (String basePackage : basePackages) {
             for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, RPCService.class)) {
                 for (Class<?> anInterface : clazz.getInterfaces()) {
