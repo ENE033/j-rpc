@@ -47,7 +47,6 @@ public class JRPCServerAutoConfiguration {
     @Bean
     public JRPCServer jRPCServer() {
         JRPCServer jRPCServer = new JRPCServer(serverRPCConfig);
-        jRPCServer.run();
         return jRPCServer;
     }
 }
