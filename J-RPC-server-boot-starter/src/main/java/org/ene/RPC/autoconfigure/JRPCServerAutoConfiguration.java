@@ -22,10 +22,11 @@ public class JRPCServerAutoConfiguration {
 
     String serverHost;
 
-    JRPCServerProperties jrpcServerProperties;
-
     ServerRPCConfig serverRPCConfig;
 
+    JRPCServerProperties jrpcServerProperties;
+
+    // 构造器注入
     public JRPCServerAutoConfiguration(JRPCServerProperties jrpcServerProperties) {
         this.jrpcServerProperties = jrpcServerProperties;
         serverRPCConfig = new ServerRPCConfig();
@@ -46,7 +47,6 @@ public class JRPCServerAutoConfiguration {
 
     @Bean
     public JRPCServer jRPCServer() {
-        JRPCServer jRPCServer = new JRPCServer(serverRPCConfig);
-        return jRPCServer;
+        return new JRPCServer(serverRPCConfig);
     }
 }
