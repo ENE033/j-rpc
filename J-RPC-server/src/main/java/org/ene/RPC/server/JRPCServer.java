@@ -76,7 +76,7 @@ public class JRPCServer extends AbstractRPCServer implements Runnable, ServiceSc
                             // 协议
                             pipeline.addLast(new MessageCodec(serverRpcConfig));
                             // 请求消息处理器
-                            pipeline.addLast(new RequestHandler(serviceController, serverRpcConfig));
+                            pipeline.addLast(new RequestHandler(serviceController));
                         }
                     })
                     .bind(new InetSocketAddress("0.0.0.0", serverRpcConfig.getNettyPort()));

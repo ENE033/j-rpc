@@ -50,14 +50,12 @@ public class ServiceController {
      * 2、用于做客户端请求的适配器，客户端只传入接口的全限定名，由本类的beanNameMap进行适配
      * 饿汉式
      */
-    public Map<String, String> beanNameMap = new ConcurrentHashMap<>();
+    public Map<String, String> beanNameMap = new HashMap<>();
 
     /**
      * 懒汉式
      */
     private final Map<String, Method> methodMap = new ConcurrentHashMap<>(128);
-
-//    public static Map<String, Map<String, Method>> METHOD_MAP = new ConcurrentHashMap<>();
 
 
     /**

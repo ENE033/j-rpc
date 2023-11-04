@@ -17,13 +17,10 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     private final ServiceController serviceController;
 
-    private final ServerRPCConfig serverRpcConfig;
-
     private final ServerFilterChain serverFilterChain;
 
-    public RequestHandler(ServiceController serviceController, ServerRPCConfig serverRpcConfig) {
+    public RequestHandler(ServiceController serviceController) {
         this.serviceController = serviceController;
-        this.serverRpcConfig = serverRpcConfig;
         this.serverFilterChain = new ServerFilterChain();
     }
 
