@@ -1,9 +1,10 @@
 package org.ene.RPC.core.serializer;
 
 public interface SerializerStrategy {
-    Integer JDK_SERIALIZER = 0;
-    Integer JSON_SERIALIZER = 1;
-    Integer HESSIAN_SERIALIZER = 2;
+    int JDK = 0;
+    int JSON = 1;
+    int HESSIAN = 2;
+    int KRYO = 3;
 
     <T> byte[] serializer(T obj);
 
