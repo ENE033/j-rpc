@@ -13,6 +13,7 @@ import org.ene.RPC.client.util.SeqUtil;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
+import org.ene.RPC.core.util.ReflectUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,7 +62,7 @@ public class RPCClientProxyFactory {
                         requestMessage.setSeq(seq);
                         requestMessage.setIfN(clazz.getCanonicalName());
                         requestMessage.setMN(method.getName());
-                        requestMessage.setAT(argsClazz);
+                        requestMessage.setAT(ReflectUtil.classArrayToStrArray(argsClazz));
                         requestMessage.setA(args);
 
                         // 获取一个实例的地址

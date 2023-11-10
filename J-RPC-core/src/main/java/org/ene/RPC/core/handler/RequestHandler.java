@@ -9,6 +9,7 @@ import org.ene.RPC.core.ServiceController;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.ene.RPC.core.util.ReflectUtil;
 
 import java.lang.reflect.Method;
 
@@ -37,7 +38,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
         Invocation invocation = new Invocation();
         invocation.setSeq(requestMessage.getSeq());
         invocation.setArgs(requestMessage.getA());
-        invocation.setArgsType(requestMessage.getAT());
+        invocation.setArgsType(ReflectUtil.strArrayToClassArray(requestMessage.getAT()));
         invocation.setMethodName(requestMessage.getMN());
         invocation.setInterfaceName(requestMessage.getIfN());
         return invocation;

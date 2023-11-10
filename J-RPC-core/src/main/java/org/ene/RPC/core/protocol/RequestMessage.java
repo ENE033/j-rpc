@@ -25,7 +25,7 @@ public class RequestMessage extends Message {
     /**
      * 参数类型数组
      */
-    public Class<?>[] aT;
+    public String[] aT;
     /**
      * 参数数组
      */

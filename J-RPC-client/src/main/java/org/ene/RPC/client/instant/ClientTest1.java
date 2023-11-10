@@ -18,7 +18,7 @@ public class ClientTest1 {
 //        System.out.println(testService.getCount());
         try {
 //            System.out.println(testService.getNow());
-            System.out.println(testService.getAnswer("eqwrqwrdsa"));
+            System.out.println(testService.getAnswer("我爱果汁3124"));
         } catch (Exception e) {
             e.printStackTrace();
         }

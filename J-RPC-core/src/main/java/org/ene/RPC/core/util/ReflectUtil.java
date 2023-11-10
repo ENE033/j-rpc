@@ -1,5 +1,7 @@
 package org.ene.RPC.core.util;
 
+import org.ene.RPC.core.constants.mapping.StaticDict;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -75,4 +77,27 @@ public class ReflectUtil {
         return "";
     }
 
+    public static Class<?>[] strArrayToClassArray(String[] strArray) {
+        Class<?>[] clazzArray = new Class<?>[strArray.length];
+        for (int i = 0; i < strArray.length; i++) {
+            try {
+                Class<?> clazz;
+                clazzArray[i] = (clazz = StaticDict.name2Clazz(strArray[i])) != null
+                        ? clazz : Class.forName(strArray[i]);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return clazzArray;
+    }
+
+    public static String[] classArrayToStrArray(Class<?>[] clazzArray) {
+        String[] clazzNameArray = new String[clazzArray.length];
+        for (int i = 0; i < clazzArray.length; i++) {
+            String clazzName;
+            clazzNameArray[i] = (clazzName = StaticDict.clazz2Name(clazzArray[i])) != null
+                    ? clazzName : clazzArray[i].getName();
+        }
+        return clazzNameArray;
+    }
 }

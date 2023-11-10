@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
+import org.ene.RPC.core.util.ReflectUtil;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -57,13 +58,13 @@ public class JsonSerializer implements SerializerStrategy {
     }
 
     private void handleRequestMessage(RequestMessage requestMessage) {
-        Class<?>[] argsType = requestMessage.getAT();
+        Class<?>[] classArray = ReflectUtil.strArrayToClassArray(requestMessage.getAT());
         Object[] args = requestMessage.getA();
-        for (int i = 0; i < argsType.length; i++) {
+        for (int i = 0; i < classArray.length; i++) {
             if (args[i] == null) {
                 continue;
             }
-            Class<?> aClass = argsType[i];
+            Class<?> aClass = classArray[i];
             if (aClass == Date.class) {
                 args[i] = new Date((long) args[i]);
             } else if (aClass == LocalDateTime.class) {

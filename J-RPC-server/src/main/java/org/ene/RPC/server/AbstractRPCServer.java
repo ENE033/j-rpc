@@ -1,11 +1,13 @@
 package org.ene.RPC.server;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 public abstract class AbstractRPCServer implements ApplicationContextAware {
     ApplicationContext applicationContext;
 
@@ -24,10 +26,12 @@ public abstract class AbstractRPCServer implements ApplicationContextAware {
     AtomicInteger state = new AtomicInteger(0);
 
     boolean init() {
+        log.info("rpc服务端开始启动");
         return state.compareAndSet(NEW, STARING);
     }
 
     void stared() {
+        log.info("rpc服务端启动完毕");
         state.set(STARED);
     }
 
