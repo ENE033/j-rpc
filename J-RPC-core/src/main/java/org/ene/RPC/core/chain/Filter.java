@@ -1,5 +1,5 @@
 package org.ene.RPC.core.chain;
 
 public interface Filter {
-    void invoke(ChainNode nextNode, InvocationWrapper inv);
+    Object filter(ChainNode nextNode, Flow obj);
 }

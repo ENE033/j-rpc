@@ -1,9 +1,9 @@
-package org.ene.RPC.core.chain.server;
+package org.ene.RPC.core.chain.server.filter;
 
 import org.ene.RPC.core.annotation.FilterComponent;
 import org.ene.RPC.core.annotation.TpsLimit;
 import org.ene.RPC.core.chain.ChainNode;
-import org.ene.RPC.core.chain.InvocationWrapper;
+import org.ene.RPC.core.chain.server.InvocationWrapper;
 import org.ene.RPC.core.constants.CommonConstant;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
@@ -16,24 +16,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
-@FilterComponent(group = CommonConstant.SERVER, order = 1)
-public class TpsLimitFilter implements SFilter {
+@FilterComponent(group = CommonConstant.INVOKER, order = 1)
+public class TpsLimitFilter implements InvokerFilter {
 
     private final TpsLimiter tpsLimiter = new TpsLimiter();
 
     @Override
-    public void invoke(ChainNode nextNode, InvocationWrapper inv) {
+    public Object stream(ChainNode nextNode, InvocationWrapper inv) {
         Method method = inv.getMethod();
         // 不限流直接放行
         if (!method.isAnnotationPresent(TpsLimit.class)) {
-            nextNode.invoke(inv);
-            return;
+            nextNode.stream(inv);
+            return null;
         }
         if (!tpsLimiter.isAllowable(inv)) {
             log.info("调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper：{}", JSONObject.toJSONString(inv));
-            return;
+            return null;
         }
-        nextNode.invoke(inv);
+        return nextNode.stream(inv);
     }
 
 

@@ -1,9 +1,8 @@
 package org.ene.RPC.core.handler;
 
-import org.ene.RPC.core.chain.Invocation;
-import org.ene.RPC.core.chain.InvocationWrapper;
-import org.ene.RPC.core.chain.ServerFilterChain;
-import org.ene.RPC.core.config.ServerRPCConfig;
+import org.ene.RPC.core.chain.server.Invocation;
+import org.ene.RPC.core.chain.server.InvocationWrapper;
+import org.ene.RPC.core.chain.server.InvokerFilterChain;
 import org.ene.RPC.core.protocol.RequestMessage;
 import org.ene.RPC.core.ServiceController;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,11 +17,11 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     private final ServiceController serviceController;
 
-    private final ServerFilterChain serverFilterChain;
+    private final InvokerFilterChain serverFilterChain;
 
     public RequestHandler(ServiceController serviceController) {
         this.serviceController = serviceController;
-        this.serverFilterChain = new ServerFilterChain();
+        this.serverFilterChain = new InvokerFilterChain();
     }
 
     @Override

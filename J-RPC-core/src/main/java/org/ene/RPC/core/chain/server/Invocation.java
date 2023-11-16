@@ -1,9 +1,10 @@
-package org.ene.RPC.core.chain;
+package org.ene.RPC.core.chain.server;
 
 import lombok.Data;
+import org.ene.RPC.core.chain.Flow;
 
 @Data
-public class Invocation {
+public class Invocation{
 
     // 服务名
     String interfaceName;

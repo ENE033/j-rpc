@@ -1,5 +1,6 @@
-package org.ene.RPC.core.chain;
+package org.ene.RPC.core.chain.server;
 
+import org.ene.RPC.core.chain.Flow;
 import org.ene.RPC.core.protocol.ResponseMessage;
 import org.ene.RPC.core.protocol.ResponseStatus;
 import org.ene.RPC.core.execute.ExecuteStrategy;
@@ -13,7 +14,7 @@ import java.lang.reflect.Method;
 @Data
 @Slf4j
 @ToString
-public class InvocationWrapper {
+public class InvocationWrapper extends Flow {
 
     // 从request中获取到的原始信息
     Invocation inv;

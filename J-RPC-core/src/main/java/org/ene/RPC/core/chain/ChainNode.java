@@ -18,7 +18,7 @@ public class ChainNode {
         this.filter = filter;
     }
 
-    public void invoke(InvocationWrapper inv) {
-        filter.invoke(next, inv);
+    public Object stream(Flow flow) {
+        return filter.filter(next, flow);
     }
 }
