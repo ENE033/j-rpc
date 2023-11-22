@@ -1,7 +1,7 @@
 package org.ene.RPC.client.instant;
 
 import org.ene.RPC.core.config.ClientRPCConfig;
-import org.ene.RPC.client.proxy.RPCClientProxyFactory;
+import org.ene.RPC.core.client.proxy.RPCClientProxyFactory;
 import org.ene.RPC.service.TestService;
 import org.ene.RPC.service.TestService1;
 import org.apache.jmeter.config.Arguments;

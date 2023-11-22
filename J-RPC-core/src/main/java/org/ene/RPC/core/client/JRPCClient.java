@@ -1,4 +1,4 @@
-package org.ene.RPC.client;
+package org.ene.RPC.core.client;
 
 import org.ene.RPC.core.config.ClientRPCConfig;
 import org.ene.RPC.core.handler.ResponseHandler;
@@ -16,7 +16,7 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RPCClient {
+public class JRPCClient {
     //
     public static final Map<InetSocketAddress, Channel> CHANNEL_MAP = new ConcurrentHashMap<>();
 
@@ -24,7 +24,7 @@ public class RPCClient {
 
     private final ClientRPCConfig clientRPCConfig;
 
-    public RPCClient(ClientRPCConfig clientRPCConfig) {
+    public JRPCClient(ClientRPCConfig clientRPCConfig) {
         this.clientRPCConfig = clientRPCConfig;
     }
 

@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 责任链抽象，需要确保每个过滤器线程安全的
+ * 责任链抽象，需要确保每个过滤器是线程安全的
  */
 public abstract class AbstractFilterChain implements FilterChain {
 
@@ -27,8 +27,8 @@ public abstract class AbstractFilterChain implements FilterChain {
         }).collect(Collectors.toList());
     }
 
-    protected ChainNode head = new ChainNode(new AbstractFilterChain.HeadFiler());
-    protected ChainNode tail = new ChainNode(new AbstractFilterChain.TailFiler());
+    protected ChainNode head = new ChainNode(new AbstractFilterChain.HeadFiler(), this);
+    protected ChainNode tail = new ChainNode(new AbstractFilterChain.TailFiler(), this);
 
     public AbstractFilterChain(String group) {
         ChainNode last = tail;
@@ -38,7 +38,7 @@ public abstract class AbstractFilterChain implements FilterChain {
             if (Objects.equals(annotation.group(), group)) {
                 try {
                     Filter filter = (Filter) aClass.newInstance();
-                    last = new ChainNode(last, filter);
+                    last = new ChainNode(last, filter, this);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
@@ -49,15 +49,15 @@ public abstract class AbstractFilterChain implements FilterChain {
         head.setNext(last);
     }
 
-    public void handler(Flow flow) {
-        head.stream(flow);
+    public Object handler(Flow flow) {
+        return head.stream(flow);
     }
 
     @Slf4j
     public static class HeadFiler implements Filter {
         @Override
         public Object filter(ChainNode nextNode, Flow flow) {
-            log.info("责任链开始执行，Flow：{}", JSONObject.toJSONString(flow));
+            log.info("责任链开始执行，{}：{}", flow.getClass().getSimpleName(), JSONObject.toJSONString(flow));
             return nextNode.stream(flow);
         }
     }
@@ -66,7 +66,7 @@ public abstract class AbstractFilterChain implements FilterChain {
     public static class TailFiler implements Filter {
         @Override
         public Object filter(ChainNode nextNode, Flow flow) {
-            log.info("责任链到达链尾，Flow：{}", JSONObject.toJSONString(flow));
+            log.info("责任链到达链尾，{}：{}", flow.getClass().getSimpleName(), JSONObject.toJSONString(flow));
             return null;
         }
     }

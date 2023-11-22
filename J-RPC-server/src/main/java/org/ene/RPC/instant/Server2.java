@@ -2,7 +2,7 @@ package org.ene.RPC.instant;
 
 import org.ene.RPC.core.annotation.ServiceScan;
 import org.ene.RPC.core.config.ServerRPCConfig;
-import org.ene.RPC.server.JRPCServer;
+import org.ene.RPC.core.server.JRPCServer;
 
 @ServiceScan(basePackage = "org.ene.RPC.serviceImpl")
 public class Server2 {

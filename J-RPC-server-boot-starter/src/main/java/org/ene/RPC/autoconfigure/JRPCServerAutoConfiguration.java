@@ -1,7 +1,7 @@
 package org.ene.RPC.autoconfigure;
 
 import org.ene.RPC.core.config.ServerRPCConfig;
-import org.ene.RPC.server.JRPCServer;
+import org.ene.RPC.core.server.JRPCServer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
