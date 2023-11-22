@@ -13,7 +13,7 @@
         <module>J-RPC-client</module>
         <module>J-RPC-service</module>
         <module>J-RPC-serviceImpl</module>
-        <module>J-RPC-server-boot-starter</module>
+        <module>J-RPC-spring-boot-starter</module>
     </modules>
 
     <properties>
