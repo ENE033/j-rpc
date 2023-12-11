@@ -18,7 +18,6 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class JRPCCallerAnnotationPostProcessor implements
@@ -31,7 +30,10 @@ public class JRPCCallerAnnotationPostProcessor implements
 
     ApplicationContext applicationContext;
 
-    ConcurrentHashMap<String, List<JRPCCallerFieldElement>> annotatedFieldElementMap = new ConcurrentHashMap<>();
+    HashMap<String, List<JRPCCallerFieldElement>> JRPCCallerFieldElementMap = new HashMap<>();
+
+    HashSet<String> factoryBeanCache = new HashSet<>();
+
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -72,9 +74,7 @@ public class JRPCCallerAnnotationPostProcessor implements
             }
             if (beanType != null) {
                 try {
-                    List<JRPCCallerFieldElement> metadata = findJRPCCaller(beanType);
-                    registerFactoryBean(metadata);
-                    annotatedFieldElementMap.put(beanName, metadata);
+                    registerFactoryBean(beanName, findJRPCCaller(beanType));
                 } catch (Exception e) {
                     throw new RuntimeException("JRPCCaller扫描失败", e);
                 }
@@ -82,26 +82,32 @@ public class JRPCCallerAnnotationPostProcessor implements
         }
     }
 
-    private void registerFactoryBean(List<JRPCCallerFieldElement> metadata) {
+    private void registerFactoryBean(String beanName, List<JRPCCallerFieldElement> metadata) {
         if (CollectionUtils.isEmpty(metadata)) {
             return;
         }
-
         for (JRPCCallerFieldElement fieldElement : metadata) {
             Field field = (Field) fieldElement.getMember();
-            String callerBeanName = field.getName();
             Class<?> interfaceClass = field.getType();
+            String interfaceClassName = interfaceClass.getName();
+            String factoryBeanClassName = "JRPCCallerFactoryBean-" + interfaceClassName;
+            fieldElement.factoryBeanName = factoryBeanClassName;
+
+            if (factoryBeanCache.contains(factoryBeanClassName)) {
+                continue;
+            }
             RootBeanDefinition beanDefinition = new RootBeanDefinition();
             beanDefinition.setBeanClassName(CallerFactoryBean.class.getName());
             beanDefinition.setAttribute("interfaceClass", interfaceClass);
-            beanDefinition.setAttribute("interfaceName", interfaceClass.getName());
+            beanDefinition.setAttribute("interfaceName", factoryBeanClassName);
             beanDefinition.setAttribute("factoryBeanObjectType", interfaceClass);
             GenericBeanDefinition targetDefinition = new GenericBeanDefinition();
             targetDefinition.setBeanClass(interfaceClass);
-            beanDefinition.setDecoratedDefinition(new BeanDefinitionHolder(targetDefinition, callerBeanName + "_decorated"));
-            fieldElement.factoryBeanName = callerBeanName;
-            beanDefinitionRegistry.registerBeanDefinition(callerBeanName, beanDefinition);
+            beanDefinition.setDecoratedDefinition(new BeanDefinitionHolder(targetDefinition, interfaceClassName + "_decorated"));
+            beanDefinitionRegistry.registerBeanDefinition(factoryBeanClassName, beanDefinition);
+            factoryBeanCache.add(factoryBeanClassName);
         }
+        JRPCCallerFieldElementMap.put(beanName, metadata);
     }
 
     private List<JRPCCallerFieldElement> findJRPCCaller(Class<?> beanType) {
@@ -148,7 +154,7 @@ public class JRPCCallerAnnotationPostProcessor implements
     @Override
     public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
         try {
-            List<JRPCCallerFieldElement> metadata = annotatedFieldElementMap.get(beanName);
+            List<JRPCCallerFieldElement> metadata = JRPCCallerFieldElementMap.get(beanName);
             if (!CollectionUtils.isEmpty(metadata)) {
                 for (JRPCCallerFieldElement fieldElement : metadata) {
                     fieldElement.inject(bean, beanName, pvs);
