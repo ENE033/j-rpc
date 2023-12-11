@@ -6,11 +6,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties(prefix = "jrpc")
-public class JRPCServerProperties {
+public class JRPCProperties {
 
-    Nacos nacos;
+//    Nacos nacos;
+
+    Client client;
 
     Server server;
+
+    @Data
+    static class Server {
+        String host;
+        Integer port;
+        Nacos nacos;
+    }
+
+
+    @Data
+    static class Client {
+        Nacos nacos;
+    }
+
 
     @Data
     static class Nacos {
@@ -30,12 +46,8 @@ public class JRPCServerProperties {
         static class Registry {
             String address;
         }
+
     }
 
-    @Data
-    static class Server {
-        String host;
-        Integer port;
-    }
 
 }

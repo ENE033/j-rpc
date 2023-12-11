@@ -1,13 +1,13 @@
 package org.ene.RPC.serviceImpl;
 
-import org.ene.RPC.core.annotation.RPCService;
+import org.ene.RPC.core.annotation.JRPCService;
 import org.ene.RPC.service.TestService;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-@RPCService(beanName = "testService11")
+@JRPCService(beanName = "testService11")
 public class TestServiceImpl implements TestService {
     public static int count = 0;
 

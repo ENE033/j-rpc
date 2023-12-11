@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>org.ene</groupId>
-            <artifactId>J-RPC-server</artifactId>
+            <artifactId>J-RPC-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

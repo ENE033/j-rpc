@@ -2,6 +2,9 @@ package org.ene.RPC.core;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.ene.RPC.core.annotation.JRPCService;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -70,8 +73,10 @@ public class ServiceController {
             return;
         }
         Object obj = null;
+
         // beanName优先
         String determinedName = StrUtil.isEmpty(beanName) ? interfaceName : beanName;
+
         if (applicationContext == null) {
             try {
                 obj = clazz.getDeclaredConstructor().newInstance();
@@ -80,6 +85,30 @@ public class ServiceController {
             }
             // 没有spring的ioc容器，就需要使用serviceMap来缓存service对象
             serviceMap.put(determinedName, obj);
+        } else {
+            String[] beanNamesForType = applicationContext.getBeanNamesForType(interfaceClazz);
+            DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
+
+            String beanId = null;
+            if (beanNamesForType.length > 0) {
+                for (String beanNameForType : beanNamesForType) {
+                    AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) beanFactory.getBeanDefinition(beanNameForType);
+                    if (beanDefinition.hasBeanClass()) {
+                        Class<?> beanClass = beanDefinition.getBeanClass();
+                        boolean present = beanClass.isAnnotationPresent(JRPCService.class);
+                        if (present) {
+                            if (beanId == null) {
+                                beanId = beanNameForType;
+                            } else {
+                                throw new RuntimeException("JRPCService装配失败，接口存在多个可装配的实现类");
+                            }
+                        }
+                    }
+                }
+            } else {
+                beanId = beanNamesForType[0];
+            }
+            determinedName = StrUtil.isEmpty(beanName) ? beanId : beanName;
         }
         // 使用适配后的服务名为key，缓存类对象
         classMap.put(determinedName, interfaceClazz);

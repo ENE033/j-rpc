@@ -1,7 +1,7 @@
 package org.ene.RPC.client.instant;
 
+import org.ene.RPC.core.client.proxy.JRPCClientProxyFactory;
 import org.ene.RPC.core.config.ClientRPCConfig;
-import org.ene.RPC.core.client.proxy.RPCClientProxyFactory;
 import org.ene.RPC.service.TestService;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
@@ -11,7 +11,7 @@ import org.apache.jmeter.samplers.SampleResult;
 public class JmeterTest implements JavaSamplerClient {
     TestService testService;
     static ClientRPCConfig clientRPCConfig;
-    static RPCClientProxyFactory rpcClientProxyFactory;
+    static JRPCClientProxyFactory JRPCClientProxyFactory;
 
     static {
         clientRPCConfig = new ClientRPCConfig();
@@ -19,13 +19,13 @@ public class JmeterTest implements JavaSamplerClient {
         clientRPCConfig.setNacosRegistryAddress("139.159.207.128:8848");
         clientRPCConfig.setNacosConfigGroup("DEFAULT_GROUP");
         clientRPCConfig.setNacosConfigDataId("rpc.properties");
-        rpcClientProxyFactory = new RPCClientProxyFactory(clientRPCConfig);
+        JRPCClientProxyFactory = new JRPCClientProxyFactory(clientRPCConfig);
     }
 
 
     @Override
     public void setupTest(JavaSamplerContext javaSamplerContext) {
-        testService = rpcClientProxyFactory.getProxy(TestService.class);
+        testService = JRPCClientProxyFactory.getProxy(TestService.class);
     }
 
     @Override

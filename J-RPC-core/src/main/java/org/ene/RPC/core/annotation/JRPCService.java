@@ -5,6 +5,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RPCService {
+public @interface JRPCService {
     String beanName() default "";
 }

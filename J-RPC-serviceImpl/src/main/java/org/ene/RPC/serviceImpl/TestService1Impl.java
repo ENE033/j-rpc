@@ -1,12 +1,12 @@
 package org.ene.RPC.serviceImpl;
 
-import org.ene.RPC.core.annotation.RPCService;
+import org.ene.RPC.core.annotation.JRPCService;
 import org.ene.RPC.service.TestService1;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@RPCService(beanName = "testService1")
+@JRPCService(beanName = "testService1")
 public class TestService1Impl implements TestService1 {
     @Override
     public void doSomething() {

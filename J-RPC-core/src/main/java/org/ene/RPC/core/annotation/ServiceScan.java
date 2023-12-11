@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ServiceScan {
 
-    String[] basePackage() default {};
+    String[] basePackages() default {};
 
 }

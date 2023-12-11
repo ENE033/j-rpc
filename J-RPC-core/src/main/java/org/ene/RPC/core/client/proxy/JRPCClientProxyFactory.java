@@ -5,15 +5,13 @@ import org.ene.RPC.core.ServiceRegistry;
 import org.ene.RPC.core.chain.client.SenderFilterChain;
 import org.ene.RPC.core.chain.client.SenderWrapper;
 import org.ene.RPC.core.config.ClientRPCConfig;
-import org.ene.RPC.core.config.nacos.NacosConfig;
-import org.ene.RPC.core.proxy.ProxyCreatorAdapter;
-import org.ene.RPC.core.proxy.ProxyCreatorMap;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 @Slf4j
-public class RPCClientProxyFactory {
+public class JRPCClientProxyFactory {
 
     private final ServiceRegistry serviceRegistry;
 
@@ -23,7 +21,7 @@ public class RPCClientProxyFactory {
 
     private final SenderFilterChain senderFilterChain;
 
-    public RPCClientProxyFactory(ClientRPCConfig clientRPCConfig) {
+    public JRPCClientProxyFactory(ClientRPCConfig clientRPCConfig) {
         this.clientRPCConfig = clientRPCConfig;
         this.clientRPCConfig.init();
         serviceRegistry = new ServiceRegistry(this.clientRPCConfig);
@@ -31,25 +29,29 @@ public class RPCClientProxyFactory {
         senderFilterChain = new SenderFilterChain(serviceRegistry, jrpcClient);
     }
 
-
-    private SenderWrapper builderSender(Class<?> clazz, Object proxy, Method method, Object[] args) {
+    private SenderWrapper builderSender(Class<?> clazz, Method method, Object[] args) {
         SenderWrapper senderWrapper = new SenderWrapper();
         senderWrapper.setClazz(clazz)
-                .setProxy(proxy)
                 .setMethod(method)
                 .setArgs(args)
                 .setArgsClazz(method.getParameterTypes());
         return senderWrapper;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
-        return ProxyCreatorMap.get(clientRPCConfig.getConfigAsInt(NacosConfig.PROXY_MODE))
-                .doGetProxyObject(clazz, new ProxyCreatorAdapter() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) {
-                        return senderFilterChain.handler(builderSender(clazz, proxy, method, args));
-                    }
-                });
+        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                new Class[]{clazz},
+                (Object proxy, Method method, Object[] args)
+                        -> senderFilterChain.handler(builderSender(clazz, method, args)));
+
+//        return ProxyCreatorMap.get(clientRPCConfig.getConfigAsInt(NacosConfig.PROXY_MODE))
+//                .doGetProxyObject(clazz, new ProxyCreatorAdapter() {
+//                    @Override
+//                    public Object invoke(Object proxy, Method method, Object[] args) {
+//                        return senderFilterChain.handler(builderSender(clazz, proxy, method, args));
+//                    }
+//                });
 
     }
 }

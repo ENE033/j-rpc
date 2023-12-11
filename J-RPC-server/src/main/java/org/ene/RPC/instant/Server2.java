@@ -4,7 +4,7 @@ import org.ene.RPC.core.annotation.ServiceScan;
 import org.ene.RPC.core.config.ServerRPCConfig;
 import org.ene.RPC.core.server.JRPCServer;
 
-@ServiceScan(basePackage = "org.ene.RPC.serviceImpl")
+@ServiceScan(basePackages = "org.ene.RPC.serviceImpl")
 public class Server2 {
     public static void main(String[] args) {
         ServerRPCConfig serverRPCConfig = new ServerRPCConfig();

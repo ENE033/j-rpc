@@ -2,7 +2,7 @@ package org.ene.RPC.core.server;
 
 import org.ene.RPC.core.ServiceController;
 import org.ene.RPC.core.ServiceRegistry;
-import org.ene.RPC.core.annotation.RPCService;
+import org.ene.RPC.core.annotation.JRPCService;
 import org.ene.RPC.core.annotation.ServiceScan;
 import org.ene.RPC.core.config.ServerRPCConfig;
 import org.ene.RPC.core.handler.RequestHandler;
@@ -116,16 +116,16 @@ public class JRPCServer extends AbstractRPCServer implements Runnable, ServiceSc
         String[] basePackages;
         if (mainClass.isAnnotationPresent(ServiceScan.class)) {
             ServiceScan annotation = mainClass.getAnnotation(ServiceScan.class);
-            basePackages = annotation.basePackage();
+            basePackages = annotation.basePackages();
         } else {
             basePackages = new String[]{ClassUtil.getPackage(mainClass)};
         }
 
         for (String basePackage : basePackages) {
-            for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, RPCService.class)) {
+            for (Class<?> clazz : ClassUtil.scanPackageByAnnotation(basePackage, JRPCService.class)) {
                 for (Class<?> anInterface : clazz.getInterfaces()) {
-                    RPCService RPCAnnotation = clazz.getAnnotation(RPCService.class);
-                    serviceController.addService(anInterface.getCanonicalName(), anInterface, clazz, RPCAnnotation.beanName());
+                    JRPCService jrpcService = clazz.getAnnotation(JRPCService.class);
+                    serviceController.addService(anInterface.getCanonicalName(), anInterface, clazz, jrpcService.beanName());
                     serviceRegistry.registryServiceToNacos(anInterface.getCanonicalName());
                 }
             }

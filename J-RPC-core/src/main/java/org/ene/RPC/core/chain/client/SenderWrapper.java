@@ -17,8 +17,6 @@ public class SenderWrapper extends Flow {
     Object entity;
     // 类对象
     Class<?> clazz;
-    // 代理实体
-    Object proxy;
     // 方法
     Method method;
     // 参数列表
