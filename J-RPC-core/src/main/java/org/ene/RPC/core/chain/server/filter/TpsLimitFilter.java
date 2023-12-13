@@ -15,6 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 限流处理器
+ * 负责流量控制
+ */
 @Slf4j
 @FilterComponent(group = CommonConstant.INVOKER, order = 1)
 public class TpsLimitFilter implements InvokerFilter {

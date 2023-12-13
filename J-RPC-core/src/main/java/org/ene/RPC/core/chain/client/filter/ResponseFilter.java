@@ -14,6 +14,10 @@ import org.ene.RPC.core.util.SeqUtil;
 
 import java.lang.reflect.Method;
 
+/**
+ * 响应处理器
+ * 负责获取结果，并唤醒Promise
+ */
 @FilterComponent(group = CommonConstant.RECEIVER, order = 1)
 public class ResponseFilter implements ReceiverFilter {
     @Override

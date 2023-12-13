@@ -14,6 +14,11 @@ import org.ene.RPC.core.exception.RPCInvokeException;
 
 import java.lang.reflect.Method;
 
+/**
+ * 熔断器(请求)处理器
+ * 如果被熔断，那么执行降级处理，没有降级处理则抛出异常
+ * 如果没有被熔断，那么正常通过
+ */
 @FilterComponent(group = CommonConstant.SENDER, order = 7)
 @Slf4j
 public class CircuitBreakReqFilter implements SenderFilter {
@@ -31,6 +36,6 @@ public class CircuitBreakReqFilter implements SenderFilter {
             log.warn("熔断器开启且没有降级措施，请求被打回");
             throw new RPCInvokeException("熔断器开启且没有降级措施，请求被打回");
         }
-        return null;
+        return nextNode.stream(senderWrapper);
     }
 }

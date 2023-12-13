@@ -12,6 +12,10 @@ import org.ene.RPC.core.protocol.RequestMessage;
 
 import java.net.InetSocketAddress;
 
+/**
+ * 负载均衡处理器
+ * 通过负载均衡算法选取一个服务节点发起调用
+ */
 @FilterComponent(group = CommonConstant.SENDER, order = 6)
 public class LoadBalanceFilter implements SenderFilter {
     @Override

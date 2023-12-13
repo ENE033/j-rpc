@@ -9,6 +9,10 @@ import org.ene.RPC.core.constants.CommonConstant;
 import org.ene.RPC.core.promise.ResponsePromiseMap;
 import org.ene.RPC.core.protocol.RequestMessage;
 
+/**
+ * 发送处理器
+ * 负责将流量发送到channel，并将序列号与Promise关联
+ */
 @FilterComponent(group = CommonConstant.SENDER, order = 8)
 public class FlushFilter implements SenderFilter {
     @Override

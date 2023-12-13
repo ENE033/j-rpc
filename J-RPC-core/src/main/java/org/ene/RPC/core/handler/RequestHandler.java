@@ -26,11 +26,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<RequestMessage> 
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RequestMessage requestMessage) throws Exception {
-        InvocationWrapper invocationWrapper = wrapperInvocation(buildInvocation(requestMessage), channelHandlerContext);
-
-        serverFilterChain.handler(invocationWrapper);
-
-        invocationWrapper.execute();
+        serverFilterChain.handler(wrapperInvocation(buildInvocation(requestMessage), channelHandlerContext));
     }
 
     private Invocation buildInvocation(RequestMessage requestMessage) {

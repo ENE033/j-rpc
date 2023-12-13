@@ -31,32 +31,4 @@ public class InvocationWrapper extends Flow {
     // channel上下文
     ChannelHandlerContext channelHandlerContext;
 
-    public void execute() {
-        Method finalMethod = method;
-        Integer finalSeq = inv.getSeq();
-        Object[] args = inv.getArgs();
-        executeStrategy.writeBack(() -> {
-            ResponseMessage responseMessage = new ResponseMessage();
-
-            try {
-                Object result = finalMethod.invoke(obj, args);
-                responseMessage.setS(ResponseStatus.S);
-                responseMessage.setR(result);
-            } catch (Throwable e) {
-                log.error("服务端方法执行异常", e);
-                responseMessage.setS(ResponseStatus.F);
-                responseMessage.setR("服务端方法执行异常");
-//                responseMessage.setE(e.getCause());
-//                e.getCause();
-//                StackTraceElement[] stackTrace = e.getCause().getStackTrace();
-//                for (StackTraceElement stackTraceElement : stackTrace) {
-//                    System.out.println(stackTraceElement.toString());
-//                }
-            } finally {
-                responseMessage.setSeq(finalSeq);
-                channelHandlerContext.writeAndFlush(responseMessage);
-            }
-        });
-    }
-
 }

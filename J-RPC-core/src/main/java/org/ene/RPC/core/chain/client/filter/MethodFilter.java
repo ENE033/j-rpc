@@ -8,6 +8,11 @@ import org.ene.RPC.core.constants.CommonConstant;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 方法处理器
+ * 决定远程调用的方法
+ * 如果没有找到指定的方法，那么调用默认实现
+ */
 @FilterComponent(group = CommonConstant.SENDER, order = 1)
 public class MethodFilter implements SenderFilter {
     @Override

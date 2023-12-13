@@ -10,6 +10,11 @@ import org.ene.RPC.core.util.SeqUtil;
 
 import java.lang.reflect.Method;
 
+/**
+ * 请求信息处理器
+ * 获取序列号
+ * 组装requestMessage
+ */
 @FilterComponent(group = CommonConstant.SENDER, order = 2)
 public class RequestFilter implements SenderFilter {
     @Override

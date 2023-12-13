@@ -99,8 +99,6 @@ public class JRPCCallerAnnotationPostProcessor implements
             RootBeanDefinition beanDefinition = new RootBeanDefinition();
             beanDefinition.setBeanClassName(CallerFactoryBean.class.getName());
             beanDefinition.setAttribute("interfaceClass", interfaceClass);
-            beanDefinition.setAttribute("interfaceName", factoryBeanClassName);
-            beanDefinition.setAttribute("factoryBeanObjectType", interfaceClass);
             GenericBeanDefinition targetDefinition = new GenericBeanDefinition();
             targetDefinition.setBeanClass(interfaceClass);
             beanDefinition.setDecoratedDefinition(new BeanDefinitionHolder(targetDefinition, interfaceClassName + "_decorated"));

@@ -11,6 +11,11 @@ import org.ene.RPC.core.util.SeqUtil;
 
 import java.lang.reflect.Method;
 
+/**
+ * 响应结果处理器
+ * 负责等待Promise结果
+ * 成功则返回，不成功则抛出异常
+ */
 @FilterComponent(group = CommonConstant.SENDER, order = 10)
 public class ResultFilter implements SenderFilter {
     @Override
