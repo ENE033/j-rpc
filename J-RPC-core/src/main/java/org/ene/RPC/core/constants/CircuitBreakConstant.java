@@ -2,9 +2,9 @@ package org.ene.RPC.core.constants;
 
 public interface CircuitBreakConstant {
 
-    String exceptionCount = "count";
+    String EXCEPTION_COUNT = "count";
 
-    String exceptionRate = "rate";
+    String EXCEPTION_RATE = "rate";
 
     int CLOSE = 1;
     int HALF_OPEN = 2;

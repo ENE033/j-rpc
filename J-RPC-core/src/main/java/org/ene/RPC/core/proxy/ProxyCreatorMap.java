@@ -16,10 +16,11 @@ public class ProxyCreatorMap {
         if ((proxyCreateStrategy = MAP.get(type)) == null) {
             synchronized (lock) {
                 if ((proxyCreateStrategy = MAP.get(type)) == null) {
-                    if (type == ProxyCreateStrategy.JDK_MODE) {
-                        MAP.put(type, new JdkProxyCreator());
-                    } else if (type == ProxyCreateStrategy.CGLIB_MODE) {
-                        MAP.put(type, new CglibProxyCreator());
+                    switch (type) {
+                        case ProxyCreateStrategy.JDK_MODE:
+                            MAP.put(type, new JdkProxyCreator());
+                        case ProxyCreateStrategy.CGLIB_MODE:
+                            MAP.put(type, new CglibProxyCreator());
                     }
                     proxyCreateStrategy = MAP.get(type);
                 }
