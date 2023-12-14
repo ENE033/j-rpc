@@ -8,6 +8,7 @@ import org.ene.RPC.core.constants.CommonConstant;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.ene.RPC.core.exception.JRPCException;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -30,13 +31,16 @@ public class TpsLimitFilter implements InvokerFilter {
         Method method = inv.getMethod();
         // 不限流直接放行
         if (!method.isAnnotationPresent(TpsLimit.class)) {
-            nextNode.stream(inv);
-            return null;
+            return nextNode.stream(inv);
         }
+        // 限流器不允许通过
         if (!tpsLimiter.isAllowable(inv)) {
-            log.info("调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper：{}", JSONObject.toJSONString(inv));
-            return null;
+            log.warn("调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper：{}", JSONObject.toJSONString(inv));
+            throw new JRPCException(JRPCException.LIMIT_EXCEEDED_EXCEPTION,
+                    "调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper："
+                            + JSONObject.toJSONString(inv));
         }
+        // 限流器允许通过
         return nextNode.stream(inv);
     }
 

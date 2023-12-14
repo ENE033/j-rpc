@@ -1,6 +1,7 @@
 package org.ene.RPC.core.nacos;
 
 import org.ene.RPC.core.config.ServerRPCConfig;
+import org.ene.RPC.core.exception.JRPCException;
 import org.ene.RPC.core.loadBanlance.LoadBalanceMap;
 import org.ene.RPC.core.loadBanlance.LoadBalanceStrategy;
 import org.ene.RPC.core.nacos.config.NacosConfig;
@@ -29,7 +30,7 @@ public class ServiceRegistry {
         try {
             NAMING_SERVICE = NamingFactory.createNamingService(nacosConfig.getNacosRegistryAddress());
         } catch (NacosException e) {
-            throw new RuntimeException("注册中心初始化时出现异常:" + e);
+            throw new JRPCException(JRPCException.REGISTRY_EXCEPTION, "注册中心初始化时出现异常", e);
         }
     }
 
@@ -40,7 +41,7 @@ public class ServiceRegistry {
      */
     public void registryServiceToNacos(String interfaceName) {
         if (!(nacosConfig instanceof ServerRPCConfig)) {
-            throw new RuntimeException("出现未知异常");
+            throw new JRPCException(JRPCException.UNKNOWN_EXCEPTION, "出现未知异常");
         }
         ServerRPCConfig serverRPCConfig = (ServerRPCConfig) this.nacosConfig;
         try {
@@ -56,7 +57,7 @@ public class ServiceRegistry {
         try {
             allInstances = NAMING_SERVICE.getAllInstances(serviceName);
         } catch (NacosException e) {
-            throw new RuntimeException("获取实例出现异常", e);
+            throw new JRPCException(JRPCException.REGISTRY_EXCEPTION, "获取实例出现异常", e);
         }
 //        Instance instance = allInstances.get(0);
         LoadBalanceStrategy loadBalanceStrategy = LoadBalanceMap.get(nacosConfig.getConfigAsInt(NacosConfig.LOADBALANCE_TYPE));

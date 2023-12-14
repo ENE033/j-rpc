@@ -7,10 +7,8 @@ import org.ene.RPC.core.chain.ChainNode;
 import org.ene.RPC.core.chain.client.SenderWrapper;
 import org.ene.RPC.core.circuitBreak.CircuitBreakRuleHolder;
 import org.ene.RPC.core.circuitBreak.CircuitBreaker;
-import org.ene.RPC.core.circuitBreak.ExceptionCountCircuitBreaker;
-import org.ene.RPC.core.constants.CircuitBreakConstant;
 import org.ene.RPC.core.constants.CommonConstant;
-import org.ene.RPC.core.exception.RPCInvokeException;
+import org.ene.RPC.core.exception.JRPCException;
 
 import java.lang.reflect.Method;
 
@@ -34,7 +32,7 @@ public class CircuitBreakReqFilter implements SenderFilter {
 
         if (!circuitBreaker.tryPass(circuitBreakRule, method)) {
             log.warn("熔断器开启且没有降级措施，请求被打回");
-            throw new RPCInvokeException("熔断器开启且没有降级措施，请求被打回");
+            throw new JRPCException(JRPCException.CIRCUIT_BREAK_EXCEPTION, "熔断器开启且没有降级措施，请求被打回");
         }
         return nextNode.stream(senderWrapper);
     }

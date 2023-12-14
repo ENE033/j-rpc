@@ -1,5 +1,6 @@
 package org.ene.RPC.core.serializer.impl;
 
+import org.ene.RPC.core.exception.JRPCException;
 import org.ene.RPC.core.protocol.RequestMessage;
 import org.ene.RPC.core.serializer.SerializerStrategy;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,9 +35,8 @@ public class JsonSerializer implements SerializerStrategy {
         try {
             return objectMapper.writeValueAsBytes(obj);
         } catch (JsonProcessingException e) {
-            log.error("序列化失败", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "序列化错误", e);
         }
-        return null;
 //        JSONObject.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 //        return JSONObject.toJSONBytes(obj, SerializerFeature.WriteDateUseDateFormat);
 //        return JSON.toJSON(obj).toString().getBytes(StandardCharsets.UTF_8);
@@ -51,9 +51,8 @@ public class JsonSerializer implements SerializerStrategy {
             }
             return message;
         } catch (IOException e) {
-            log.error("反序列化失败", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "序列化错误", e);
         }
-        return null;
 //        return JSON.parseObject(new String(bytes), clazz);
     }
 

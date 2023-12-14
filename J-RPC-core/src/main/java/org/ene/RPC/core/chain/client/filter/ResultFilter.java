@@ -5,9 +5,7 @@ import org.ene.RPC.core.annotation.FilterComponent;
 import org.ene.RPC.core.chain.ChainNode;
 import org.ene.RPC.core.chain.client.SenderWrapper;
 import org.ene.RPC.core.constants.CommonConstant;
-import org.ene.RPC.core.exception.RPCParamException;
-import org.ene.RPC.core.promise.ResponsePromiseMap;
-import org.ene.RPC.core.util.SeqUtil;
+import org.ene.RPC.core.exception.JRPCException;
 
 import java.lang.reflect.Method;
 
@@ -37,12 +35,12 @@ public class ResultFilter implements SenderFilter {
                     nextNode.stream(senderWrapper);
                     return result;
                 } else {
-                    throw new RPCParamException("返回类型与预期不匹配");
+                    throw new JRPCException(JRPCException.VALIDATION_EXCEPTION, "返回类型与预期不匹配");
                 }
             }
             throw promise.cause();
         } catch (Throwable e) {
-            throw new RuntimeException("rpc远程调用失败", e);
+            throw new JRPCException(JRPCException.UNKNOWN_EXCEPTION, "rpc远程调用失败", e);
         }
     }
 }

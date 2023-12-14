@@ -1,6 +1,6 @@
 package org.ene.RPC.core.serializer.impl;
 
-import org.ene.RPC.core.exception.SerializerException;
+import org.ene.RPC.core.exception.JRPCException;
 import org.ene.RPC.core.serializer.SerializerStrategy;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
@@ -21,7 +21,7 @@ public class HessianSerializer implements SerializerStrategy {
             return baos.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new SerializerException("序列化错误", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "序列化错误", e);
         } finally {
             try {
                 output.close();
@@ -41,7 +41,7 @@ public class HessianSerializer implements SerializerStrategy {
             return (T) input.readObject();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new SerializerException("序列化错误", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "序列化错误", e);
         } finally {
             try {
                 input.close();

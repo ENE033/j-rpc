@@ -3,6 +3,7 @@ package org.ene.RPC.core;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.ene.RPC.core.annotation.JRPCService;
+import org.ene.RPC.core.exception.JRPCException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -100,7 +101,7 @@ public class ServiceController {
                             if (beanId == null) {
                                 beanId = beanNameForType;
                             } else {
-                                throw new RuntimeException("JRPCService装配失败，接口存在多个可装配的实现类");
+                                throw new JRPCException(JRPCException.VALIDATION_EXCEPTION, "JRPCService装配失败，接口存在多个可装配的实现类");
                             }
                         }
                     }
@@ -129,7 +130,7 @@ public class ServiceController {
         if (classMap.containsKey(determinedName)) {
             return classMap.get(determinedName);
         }
-        throw new RuntimeException("不存在这个服务");
+        throw new JRPCException(JRPCException.SERVICE_NOT_FOUND, "不存在这个服务：" + interfaceName);
     }
 
     /**
@@ -149,7 +150,7 @@ public class ServiceController {
                 return serviceMap.get(determinedName);
             }
         }
-        throw new RuntimeException("不存在这个服务");
+        throw new JRPCException(JRPCException.SERVICE_NOT_FOUND, "不存在这个服务：" + interfaceName);
     }
 
 
@@ -166,7 +167,7 @@ public class ServiceController {
                 method = clazz.getMethod(methodCanonicalName, argsType);
                 methodMap.putIfAbsent(methodKey, method);
             } catch (NoSuchMethodException e) {
-                log.error("服务端没有找到对应的方法", e);
+                throw new JRPCException(JRPCException.METHOD_NOT_FOUND, "服务端没有找到对应的方法", e);
             }
         }
         return method;

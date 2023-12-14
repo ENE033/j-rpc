@@ -1,6 +1,6 @@
 package org.ene.RPC.core.serializer.impl;
 
-import org.ene.RPC.core.exception.SerializerException;
+import org.ene.RPC.core.exception.JRPCException;
 import org.ene.RPC.core.serializer.SerializerStrategy;
 
 import java.io.*;
@@ -18,7 +18,7 @@ public class JdkSerializer implements SerializerStrategy {
             return baos.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new SerializerException("序列化错误", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "序列化错误", e);
         } finally {
             try {
                 oos.close();
@@ -40,10 +40,10 @@ public class JdkSerializer implements SerializerStrategy {
             return (T) ois.readObject();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new SerializerException("序列化错误", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "序列化错误", e);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new SerializerException("无法找到类", e);
+            throw new JRPCException(JRPCException.SERIALIZATION_EXCEPTION, "无法找到类", e);
         } finally {
             try {
                 ois.close();

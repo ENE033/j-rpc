@@ -4,6 +4,7 @@ package org.ene.RPC.core.execute.impl;
 import org.ene.RPC.core.execute.ExecuteStrategy;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +17,7 @@ public class ExecuteInAsync implements ExecuteStrategy {
             16,
             10,
             TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(500000),
+            new LinkedBlockingQueue<>(),
             new ThreadPoolExecutor.CallerRunsPolicy());
 
     @Override

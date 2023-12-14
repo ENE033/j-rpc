@@ -6,13 +6,11 @@ import org.ene.RPC.core.annotation.FilterComponent;
 import org.ene.RPC.core.chain.ChainNode;
 import org.ene.RPC.core.chain.client.ReceiverWrapper;
 import org.ene.RPC.core.constants.CommonConstant;
-import org.ene.RPC.core.exception.RPCInvokeException;
+import org.ene.RPC.core.exception.JRPCException;
 import org.ene.RPC.core.promise.ResponsePromiseMap;
 import org.ene.RPC.core.protocol.ResponseMessage;
 import org.ene.RPC.core.protocol.ResponseStatus;
 import org.ene.RPC.core.util.SeqUtil;
-
-import java.lang.reflect.Method;
 
 /**
  * 响应处理器
@@ -36,7 +34,7 @@ public class ResponseFilter implements ReceiverFilter {
                 break;
             case F:
                 String errMsg = (String) responseMessage.getR();
-                promise.setFailure(new RPCInvokeException(errMsg));
+                promise.setFailure(new JRPCException(JRPCException.BIZ_EXCEPTION, errMsg));
                 break;
         }
         return nextNode.stream(receiverWrapper);
