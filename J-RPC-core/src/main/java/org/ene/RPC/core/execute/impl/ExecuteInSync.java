@@ -18,7 +18,7 @@ public class ExecuteInSync implements ExecuteStrategy {
                     new ThreadPoolExecutor.AbortPolicy());
 
     @Override
-    public void writeBack(Runnable task) {
+    public void execute(Runnable task) {
         SINGLE_EXECUTOR_GROUP.execute(task);
     }
 

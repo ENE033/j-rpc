@@ -1,7 +1,7 @@
 package org.ene.RPC.core.client.proxy;
 
 import org.ene.RPC.core.client.JRPCClient;
-import org.ene.RPC.core.ServiceRegistry;
+import org.ene.RPC.core.nacos.ServiceRegistry;
 import org.ene.RPC.core.chain.client.SenderFilterChain;
 import org.ene.RPC.core.chain.client.SenderWrapper;
 import org.ene.RPC.core.config.ClientRPCConfig;

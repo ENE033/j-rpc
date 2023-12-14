@@ -8,6 +8,6 @@ public interface ExecuteStrategy {
     Integer SYNC = 0;
     Integer ASYNC = 1;
 
-    void writeBack(Runnable task);
+    void execute(Runnable task);
 
 }

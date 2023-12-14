@@ -1,4 +1,4 @@
-package org.ene.RPC.core.scanner;
+package org.ene.RPC.core.server;
 
 public interface ServiceScanner {
 

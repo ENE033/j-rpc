@@ -1,9 +1,10 @@
 package org.ene.RPC.core.config;
 
-import org.ene.RPC.core.config.nacos.NacosConfig;
+import org.ene.RPC.core.nacos.config.NacosConfig;
 
+/**
+ * 客户端配置
+ */
 public class ClientRPCConfig extends NacosConfig {
-
-    // 待开发
 
 }

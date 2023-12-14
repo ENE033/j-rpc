@@ -1,7 +1,7 @@
 package org.ene.RPC.core.chain.client.filter;
 
 import io.netty.channel.Channel;
-import org.ene.RPC.core.ServiceRegistry;
+import org.ene.RPC.core.nacos.ServiceRegistry;
 import org.ene.RPC.core.annotation.FilterComponent;
 import org.ene.RPC.core.chain.ChainNode;
 import org.ene.RPC.core.chain.client.SenderFilterChain;

@@ -1,6 +1,7 @@
 package org.ene.RPC.core.protocol;
 
-import org.ene.RPC.core.config.nacos.NacosConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.ene.RPC.core.nacos.config.NacosConfig;
 import org.ene.RPC.core.serializer.SerializerStrategy;
 import org.ene.RPC.core.serializer.SerializerMap;
 import io.netty.buffer.ByteBuf;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @ChannelHandler.Sharable
+@Slf4j
 public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
     private final static byte[] wagz = "wagz".getBytes(StandardCharsets.UTF_8);
@@ -54,7 +56,7 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         byte[] magic = new byte[4];
         buf.readBytes(magic);
         if (!Arrays.equals(magic, wagz)) {
-            // 魔数不同 todo
+            log.warn("魔数不同，拒收消息");
             return;
         }
         // 版本号

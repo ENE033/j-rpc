@@ -1,6 +1,6 @@
 package org.ene.RPC.core.chain.client;
 
-import org.ene.RPC.core.ServiceRegistry;
+import org.ene.RPC.core.nacos.ServiceRegistry;
 import org.ene.RPC.core.chain.AbstractFilterChain;
 import org.ene.RPC.core.client.JRPCClient;
 import org.ene.RPC.core.constants.CommonConstant;

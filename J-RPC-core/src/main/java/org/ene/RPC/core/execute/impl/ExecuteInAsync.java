@@ -20,7 +20,7 @@ public class ExecuteInAsync implements ExecuteStrategy {
             new ThreadPoolExecutor.CallerRunsPolicy());
 
     @Override
-    public void writeBack(Runnable task) {
+    public void execute(Runnable task) {
         EXECUTOR_GROUP.execute(task);
     }
 

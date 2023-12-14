@@ -35,7 +35,7 @@ public class ExecuteFilter implements InvokerFilter {
         Method finalMethod = method;
         Integer finalSeq = inv.getSeq();
         Object[] args = inv.getArgs();
-        executeStrategy.writeBack(() -> {
+        executeStrategy.execute(() -> {
             ResponseMessage responseMessage = new ResponseMessage();
             try {
                 Object result = finalMethod.invoke(obj, args);
