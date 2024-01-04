@@ -7,6 +7,8 @@ import org.ene.RPC.core.nacos.config.NacosConfig;
  */
 public class ServerRPCConfig extends NacosConfig {
 
+    protected boolean satisfied = true;
+
     /**
      * netty服务器的启动端口
      */
@@ -16,6 +18,15 @@ public class ServerRPCConfig extends NacosConfig {
      * 服务端提供服务的公网ip
      */
     protected volatile String exposedHost;
+
+
+    public boolean isSatisfied() {
+        return satisfied;
+    }
+
+    public void setSatisfied(boolean satisfied) {
+        this.satisfied = satisfied;
+    }
 
     public Integer getNettyPort() {
         return nettyPort;

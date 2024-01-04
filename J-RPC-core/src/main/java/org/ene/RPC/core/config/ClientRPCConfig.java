@@ -7,4 +7,13 @@ import org.ene.RPC.core.nacos.config.NacosConfig;
  */
 public class ClientRPCConfig extends NacosConfig {
 
+    protected boolean satisfied = true;
+
+    public boolean isSatisfied() {
+        return satisfied;
+    }
+
+    public void setSatisfied(boolean satisfied) {
+        this.satisfied = satisfied;
+    }
 }

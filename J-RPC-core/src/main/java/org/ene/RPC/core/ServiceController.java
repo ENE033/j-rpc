@@ -91,7 +91,7 @@ public class ServiceController {
             DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
 
             String beanId = null;
-            if (beanNamesForType.length > 0) {
+            if (beanNamesForType.length > 1) {
                 for (String beanNameForType : beanNamesForType) {
                     AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) beanFactory.getBeanDefinition(beanNameForType);
                     if (beanDefinition.hasBeanClass()) {
@@ -106,8 +106,10 @@ public class ServiceController {
                         }
                     }
                 }
-            } else {
+            } else if (beanNamesForType.length == 1) {
                 beanId = beanNamesForType[0];
+            }else {
+                throw new JRPCException(JRPCException.VALIDATION_EXCEPTION, "JRPCService装配失败，接口不存在可装配的实现类");
             }
             determinedName = StrUtil.isEmpty(beanName) ? beanId : beanName;
         }

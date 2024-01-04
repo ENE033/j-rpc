@@ -42,12 +42,23 @@ public class JRPCAutoConfiguration implements ApplicationContextAware {
     @Bean
     public ServerRPCConfig serverRPCConfig(JRPCProperties jrpcProperties) {
         ServerRPCConfig serverRPCConfig = new ServerRPCConfig();
+        if (jrpcProperties.server == null || jrpcProperties.server.nacos == null || jrpcProperties.server.nacos.configuration == null
+                || jrpcProperties.server.nacos.registry == null) {
+            serverRPCConfig.setSatisfied(false);
+            return serverRPCConfig;
+        }
         String nacosConfigAddress = jrpcProperties.server.nacos.configuration.address;
         String nacosConfigDataId = jrpcProperties.server.nacos.configuration.dataId;
         String nacosConfigGroup = jrpcProperties.server.nacos.configuration.group;
         String nacosRegistryAddress = jrpcProperties.server.nacos.registry.address;
         String serverHost = jrpcProperties.server.host;
         Integer serverPort = jrpcProperties.server.port;
+
+        if (nacosConfigAddress == null || nacosConfigDataId == null || nacosConfigGroup == null || nacosRegistryAddress == null
+                || serverHost == null || serverPort == null) {
+            serverRPCConfig.setSatisfied(false);
+            return serverRPCConfig;
+        }
 
         serverRPCConfig.setNacosConfigAddress(nacosConfigAddress);
         serverRPCConfig.setNacosConfigDataId(nacosConfigDataId);
@@ -59,13 +70,22 @@ public class JRPCAutoConfiguration implements ApplicationContextAware {
     }
 
     @Bean
-    public ClientRPCConfig clientRPCConfig(JRPCProperties jrpcProperties){
+    public ClientRPCConfig clientRPCConfig(JRPCProperties jrpcProperties) {
         ClientRPCConfig clientRPCConfig = new ClientRPCConfig();
+        if (jrpcProperties.client == null || jrpcProperties.client.nacos == null || jrpcProperties.client.nacos.configuration == null
+                || jrpcProperties.client.nacos.registry == null) {
+            clientRPCConfig.setSatisfied(false);
+            return clientRPCConfig;
+        }
         String nacosConfigAddress = jrpcProperties.client.nacos.configuration.address;
         String nacosConfigDataId = jrpcProperties.client.nacos.configuration.dataId;
         String nacosConfigGroup = jrpcProperties.client.nacos.configuration.group;
         String nacosRegistryAddress = jrpcProperties.client.nacos.registry.address;
 
+        if (nacosConfigAddress == null || nacosConfigDataId == null || nacosConfigGroup == null || nacosRegistryAddress == null) {
+            clientRPCConfig.setSatisfied(false);
+            return clientRPCConfig;
+        }
         clientRPCConfig.setNacosConfigAddress(nacosConfigAddress);
         clientRPCConfig.setNacosConfigDataId(nacosConfigDataId);
         clientRPCConfig.setNacosConfigGroup(nacosConfigGroup);

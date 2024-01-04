@@ -1,6 +1,7 @@
 package org.ene.RPC.core.client.proxy;
 
 import org.ene.RPC.core.client.JRPCClient;
+import org.ene.RPC.core.exception.JRPCException;
 import org.ene.RPC.core.nacos.ServiceRegistry;
 import org.ene.RPC.core.chain.client.SenderFilterChain;
 import org.ene.RPC.core.chain.client.SenderWrapper;
@@ -13,20 +14,22 @@ import java.lang.reflect.Proxy;
 @Slf4j
 public class JRPCClientProxyFactory {
 
-    private final ServiceRegistry serviceRegistry;
+    private ServiceRegistry serviceRegistry;
 
-    private final JRPCClient jrpcClient;
+    private JRPCClient jrpcClient;
 
     private final ClientRPCConfig clientRPCConfig;
 
-    private final SenderFilterChain senderFilterChain;
+    private SenderFilterChain senderFilterChain;
 
     public JRPCClientProxyFactory(ClientRPCConfig clientRPCConfig) {
         this.clientRPCConfig = clientRPCConfig;
-        this.clientRPCConfig.init();
-        serviceRegistry = new ServiceRegistry(this.clientRPCConfig);
-        jrpcClient = new JRPCClient(this.clientRPCConfig);
-        senderFilterChain = new SenderFilterChain(serviceRegistry, jrpcClient);
+        if (clientRPCConfig.isSatisfied()) {
+            this.clientRPCConfig.init();
+            serviceRegistry = new ServiceRegistry(this.clientRPCConfig);
+            jrpcClient = new JRPCClient(this.clientRPCConfig);
+            senderFilterChain = new SenderFilterChain(serviceRegistry, jrpcClient);
+        }
     }
 
     private SenderWrapper builderSender(Class<?> clazz, Method method, Object[] args) {
@@ -40,6 +43,9 @@ public class JRPCClientProxyFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
+        if (!clientRPCConfig.isSatisfied()) {
+            throw new JRPCException(JRPCException.FORBIDDEN_EXCEPTION, "客户端配置不完全，无法使用");
+        }
         return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class[]{clazz},
                 (Object proxy, Method method, Object[] args)

@@ -35,7 +35,9 @@ public class JRPCServer extends AbstractRPCServer implements Runnable, ServiceSc
 
     public JRPCServer(ServerRPCConfig serverRpcConfig) {
         this.serverRpcConfig = serverRpcConfig;
-        this.serverRpcConfig.init();
+        if (serverRpcConfig.isSatisfied()) {
+            this.serverRpcConfig.init();
+        }
     }
 
     NioEventLoopGroup main = new NioEventLoopGroup();
@@ -48,6 +50,10 @@ public class JRPCServer extends AbstractRPCServer implements Runnable, ServiceSc
     @PostConstruct
     @Override
     public void run() {
+        if (!serverRpcConfig.isSatisfied()) {
+            log.info("不开启jrpc的服务端");
+            return;
+        }
         try {
             // 初始化，用于扩展
             if (!init()) {
