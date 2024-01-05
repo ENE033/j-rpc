@@ -5,6 +5,7 @@ import org.ene.RPC.service.TestService;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @JRPCService(beanName = "testService11")
@@ -96,4 +97,31 @@ public class TestServiceImpl implements TestService {
         return new Date();
     }
 
+
+    @Override
+    public CompletableFuture<String> asyncCall(String string) {
+
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "ewqr";
+        });
+
+        return completableFuture;
+    }
+
+    @Override
+    public CompletableFuture<Date> asyncCallDate(Date date) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return date;
+        });
+    }
 }

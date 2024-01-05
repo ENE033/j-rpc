@@ -6,6 +6,9 @@ import org.ene.RPC.core.config.ClientRPCConfig;
 import org.ene.RPC.service.TestService;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 
 @ServiceScan(basePackages = "org.ene.RPC.serviceImpl")
@@ -30,5 +33,26 @@ public class ClientTest1 {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        CompletableFuture<String> ewqr = testService.asyncCall("ewqr");
+
+        try {
+            System.out.println(ewqr.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        CompletableFuture<Date> dateCompletableFuture = testService.asyncCallDate(new Date());
+
+        try {
+            System.out.println(dateCompletableFuture.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
     }
 }

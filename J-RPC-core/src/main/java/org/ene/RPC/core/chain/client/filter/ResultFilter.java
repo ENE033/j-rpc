@@ -8,6 +8,9 @@ import org.ene.RPC.core.constants.CommonConstant;
 import org.ene.RPC.core.exception.JRPCException;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 响应结果处理器
@@ -16,14 +19,32 @@ import java.lang.reflect.Method;
  */
 @FilterComponent(group = CommonConstant.SENDER, order = 10)
 public class ResultFilter implements SenderFilter {
+
+
     @Override
     public Object filter(ChainNode nextNode, SenderWrapper senderWrapper) {
+        DefaultPromise<?> promise = senderWrapper.getPromise();
+        Method method = senderWrapper.getMethod();
+
+        if (method.getReturnType() == CompletableFuture.class) {
+            CompletableFuture<Object> completableFuture = CompletableFuture.supplyAsync(() -> {
+                try {
+                    promise.await();
+                    if (promise.isSuccess()) {
+                        Object result = promise.getNow();
+                        nextNode.stream(senderWrapper);
+                        return result;
+                    }
+                    throw promise.cause();
+                } catch (Throwable e) {
+                    throw new JRPCException(JRPCException.UNKNOWN_EXCEPTION, "rpc远程调用失败", e);
+                }
+            });
+            return completableFuture;
+        }
+
         try {
-            DefaultPromise<?> promise = senderWrapper.getPromise();
-            Method method = senderWrapper.getMethod();
-
             promise.await();
-
             if (promise.isSuccess()) {
                 Class<?> returnType = method.getReturnType();
                 Object result = promise.getNow();

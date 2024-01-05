@@ -5,6 +5,7 @@ import org.ene.RPC.core.annotation.TpsLimit;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 public interface TestService {
 
@@ -30,4 +31,8 @@ public interface TestService {
     LocalDateTime getNow();
 
     Date getNowDate();
+
+    CompletableFuture<String> asyncCall(String string);
+
+    CompletableFuture<Date> asyncCallDate(Date date);
 }

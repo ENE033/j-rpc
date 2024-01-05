@@ -13,7 +13,9 @@ import org.ene.RPC.core.execute.ExecuteStrategyMap;
 import org.ene.RPC.core.protocol.ResponseMessage;
 import org.ene.RPC.core.protocol.ResponseStatus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 执行处理器
@@ -37,18 +39,44 @@ public class ExecuteFilter implements InvokerFilter {
         Object[] args = inv.getArgs();
         executeStrategy.execute(() -> {
             ResponseMessage responseMessage = new ResponseMessage();
-            try {
-                Object result = finalMethod.invoke(obj, args);
-                responseMessage.setS(ResponseStatus.S);
-                responseMessage.setR(result);
-            } catch (Throwable e) {
-                log.error("服务端方法执行异常", e);
-                responseMessage.setS(ResponseStatus.F);
-                responseMessage.setR("服务端方法执行异常");
-            } finally {
-                responseMessage.setSeq(finalSeq);
-                channelHandlerContext.writeAndFlush(responseMessage);
+
+            if (finalMethod.getReturnType() == CompletableFuture.class) {
+                Object result;
+                try {
+                    result = finalMethod.invoke(obj, args);
+                    CompletableFuture completableFuture = (CompletableFuture) result;
+                    completableFuture.whenCompleteAsync((r, e) -> {
+                        if (e != null) {
+                            responseMessage.setS(ResponseStatus.F);
+                            responseMessage.setR("服务端方法执行异常");
+                        } else {
+                            responseMessage.setS(ResponseStatus.S);
+                            responseMessage.setR(r);
+                        }
+                        responseMessage.setSeq(finalSeq);
+                        channelHandlerContext.writeAndFlush(responseMessage);
+                    });
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                try {
+                    Object result = finalMethod.invoke(obj, args);
+                    responseMessage.setS(ResponseStatus.S);
+                    responseMessage.setR(result);
+                } catch (Throwable e) {
+                    log.error("服务端方法执行异常", e);
+                    responseMessage.setS(ResponseStatus.F);
+                    responseMessage.setR("服务端方法执行异常");
+                } finally {
+                    responseMessage.setSeq(finalSeq);
+                    channelHandlerContext.writeAndFlush(responseMessage);
+                }
             }
+
         });
 
         return nextNode.stream(invocationWrapper);
