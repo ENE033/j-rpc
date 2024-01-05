@@ -14,10 +14,6 @@ import java.lang.reflect.Proxy;
 @Slf4j
 public class JRPCClientProxyFactory {
 
-    private ServiceRegistry serviceRegistry;
-
-    private JRPCClient jrpcClient;
-
     private final ClientRPCConfig clientRPCConfig;
 
     private SenderFilterChain senderFilterChain;
@@ -26,8 +22,8 @@ public class JRPCClientProxyFactory {
         this.clientRPCConfig = clientRPCConfig;
         if (clientRPCConfig.isSatisfied()) {
             this.clientRPCConfig.init();
-            serviceRegistry = new ServiceRegistry(this.clientRPCConfig);
-            jrpcClient = new JRPCClient(this.clientRPCConfig);
+            ServiceRegistry serviceRegistry = new ServiceRegistry(this.clientRPCConfig);
+            JRPCClient jrpcClient = new JRPCClient(this.clientRPCConfig);
             senderFilterChain = new SenderFilterChain(serviceRegistry, jrpcClient);
         }
     }
