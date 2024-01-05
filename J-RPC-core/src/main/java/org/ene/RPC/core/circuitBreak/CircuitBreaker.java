@@ -8,5 +8,5 @@ public interface CircuitBreaker {
 
     boolean tryPass(CircuitBreakRule circuitBreakRule, Method method);
 
-    void receiveResult(String methodName, boolean success);
+    void receiveResult(CircuitBreakRule circuitBreakRule, Method methodName, boolean success);
 }

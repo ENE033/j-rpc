@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ServiceRegistry {
     private final NacosConfig nacosConfig;
-    private final NamingService NAMING_SERVICE;
+    private final NamingService namingService;
 
 //    @Value("spring.cloud.nacos.discovery.server-addr")
 //    private String nacosServerAddress;
@@ -28,7 +28,7 @@ public class ServiceRegistry {
 //        }
         this.nacosConfig = nacosConfig;
         try {
-            NAMING_SERVICE = NamingFactory.createNamingService(nacosConfig.getNacosRegistryAddress());
+            namingService = NamingFactory.createNamingService(nacosConfig.getNacosRegistryAddress());
         } catch (NacosException e) {
             throw new JRPCException(JRPCException.REGISTRY_EXCEPTION, "注册中心初始化时出现异常", e);
         }
@@ -45,7 +45,7 @@ public class ServiceRegistry {
         }
         ServerRPCConfig serverRPCConfig = (ServerRPCConfig) this.nacosConfig;
         try {
-            NAMING_SERVICE.registerInstance(
+            namingService.registerInstance(
                     interfaceName, serverRPCConfig.getExposedHost(), serverRPCConfig.getNettyPort());
         } catch (NacosException e) {
             e.printStackTrace();
@@ -55,7 +55,7 @@ public class ServiceRegistry {
     public InetSocketAddress getServiceAddress(String serviceName, RequestMessage requestMessage) {
         List<Instance> allInstances;
         try {
-            allInstances = NAMING_SERVICE.getAllInstances(serviceName);
+            allInstances = namingService.getAllInstances(serviceName);
         } catch (NacosException e) {
             throw new JRPCException(JRPCException.REGISTRY_EXCEPTION, "获取实例出现异常", e);
         }

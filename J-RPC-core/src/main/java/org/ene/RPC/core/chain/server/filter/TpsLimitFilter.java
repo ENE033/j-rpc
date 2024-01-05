@@ -93,7 +93,7 @@ public class TpsLimitFilter implements InvokerFilter {
                     allows.set(rate);
                     lastResetTime.set(now);
                 }
-                return allows.decrementAndGet() >= 0;
+                return allows.get() >= 0 && allows.decrementAndGet() >= 0;
             }
         }
 

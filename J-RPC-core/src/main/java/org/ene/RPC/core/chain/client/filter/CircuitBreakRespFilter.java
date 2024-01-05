@@ -22,9 +22,10 @@ public class CircuitBreakRespFilter implements ReceiverFilter {
         if (!method.isAnnotationPresent(CircuitBreakRule.class)) {
             return nextNode.stream(receiverWrapper);
         }
+        CircuitBreakRule circuitBreakRule = method.getAnnotation(CircuitBreakRule.class);
         // 返回的结果是否有异常
-        CircuitBreakRuleHolder.getCircuitBreaker(method.getAnnotation(CircuitBreakRule.class))
-                .receiveResult(method.getName(), receiverWrapper.isSuccess());
+        CircuitBreakRuleHolder.getCircuitBreaker(circuitBreakRule)
+                .receiveResult(circuitBreakRule, method, receiverWrapper.isSuccess());
         return nextNode.stream(receiverWrapper);
     }
 }

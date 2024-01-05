@@ -12,7 +12,9 @@ public @interface CircuitBreakRule {
 
     int timeOut();
 
-    int exceptionCount() default 0;
+    long interval() default 30;
+
+    int exceptionCountThreshold() default 10;
 
     double exceptionRate() default 0;
 }
