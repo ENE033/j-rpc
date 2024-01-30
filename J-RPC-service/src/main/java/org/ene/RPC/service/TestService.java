@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 public interface TestService {
 
     @SyncRPC
-    @TpsLimit(rate = 10, interval = 1000L)
+    @TpsLimit(count = 10, length = 1000L)
     String CPUTask();
 
     String IOTask();

@@ -3,18 +3,19 @@ package org.ene.RPC.core.circuitBreak;
 import lombok.Data;
 import org.ene.RPC.core.annotation.CircuitBreakRule;
 import org.ene.RPC.core.constants.CircuitBreakConstant;
+import org.ene.RPC.core.limit.window.fix.FixWindow;
+import org.ene.RPC.core.limit.window.fix.FixWindowInfo;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class ExceptionCountCircuitBreaker implements CircuitBreaker {
 
     Map<String, Breaker> breakerMap = new ConcurrentHashMap<>();
 
-    private final ExceptionCounter exceptionCounter = new ExceptionCounter();
+    private final FixWindow fixWindow = new FixWindow();
 
     @Override
     public boolean tryPass(CircuitBreakRule circuitBreakRule, Method method) {
@@ -50,59 +51,11 @@ public class ExceptionCountCircuitBreaker implements CircuitBreaker {
         // 如果熔断器的状态为关闭
         // 调用失败时，统计失败的次数
         // 如果失败次数到达上限，那么熔断器打开
-        if (!success && !exceptionCounter.addFailCount(circuitBreakRule, methodKey)) {
+        int count = circuitBreakRule.exceptionCountThreshold();
+        long length = circuitBreakRule.interval();
+        if (!success && !fixWindow.allowable(FixWindowInfo.create(count,length,methodKey))) {
             breaker.close2open();
         }
-    }
-
-    static class ExceptionCounter {
-        private final Map<String, Stat> statMap = new ConcurrentHashMap<>();
-
-        boolean addFailCount(CircuitBreakRule circuitBreakRule, String methodKey) {
-            int exceptionCountThreshold = circuitBreakRule.exceptionCountThreshold();
-            long interval = circuitBreakRule.interval();
-
-            if (exceptionCountThreshold > 0) {
-                Stat stat;
-                if ((stat = statMap.get(methodKey)) == null) {
-                    statMap.putIfAbsent(methodKey, new Stat(methodKey, exceptionCountThreshold, interval));
-                    stat = statMap.get(methodKey);
-                }
-                return stat.addFailCount();
-            }
-            return true;
-        }
-
-        @Data
-        static class Stat {
-            private final String name;
-
-            private final AtomicLong lastResetTime;
-
-            private final long interval;
-
-            private final AtomicInteger exceptionCount;
-
-            private final int threshold;
-
-            Stat(String name, int threshold, long interval) {
-                this.name = name;
-                this.threshold = threshold;
-                this.interval = interval;
-                this.lastResetTime = new AtomicLong(System.currentTimeMillis());
-                this.exceptionCount = new AtomicInteger(0);
-            }
-
-            public boolean addFailCount() {
-                long now = System.currentTimeMillis();
-                if (now > lastResetTime.get() + interval) {
-                    exceptionCount.set(0);
-                    lastResetTime.set(now);
-                }
-                return exceptionCount.get() <= threshold && exceptionCount.incrementAndGet() <= threshold;
-            }
-        }
-
     }
 
     @Data

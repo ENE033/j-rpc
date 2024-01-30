@@ -7,8 +7,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TpsLimit {
 
-    int rate();
+    int count();
 
-    long interval();
+    long length();
 
 }

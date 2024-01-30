@@ -9,6 +9,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.ene.RPC.core.exception.JRPCException;
+import org.ene.RPC.core.limit.window.fix.FixWindow;
+import org.ene.RPC.core.limit.window.fix.FixWindowInfo;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -26,6 +28,8 @@ public class TpsLimitFilter implements InvokerFilter {
 
     private final TpsLimiter tpsLimiter = new TpsLimiter();
 
+    private final FixWindow fixWindow = new FixWindow();
+
     @Override
     public Object stream(ChainNode nextNode, InvocationWrapper inv) {
         Method method = inv.getMethod();
@@ -33,8 +37,14 @@ public class TpsLimitFilter implements InvokerFilter {
         if (!method.isAnnotationPresent(TpsLimit.class)) {
             return nextNode.stream(inv);
         }
+
+        TpsLimit tpsLimit = method.getAnnotation(TpsLimit.class);
+        int count = tpsLimit.count();
+        long length = tpsLimit.length();
+        String methodKey = method.toGenericString();
+
         // 限流器不允许通过
-        if (!tpsLimiter.isAllowable(inv)) {
+        if (!fixWindow.allowable(FixWindowInfo.create(count, length, methodKey))) {
             log.warn("调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper：{}", JSONObject.toJSONString(inv));
             throw new JRPCException(JRPCException.LIMIT_EXCEEDED_EXCEPTION,
                     "调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper："
@@ -51,8 +61,8 @@ public class TpsLimitFilter implements InvokerFilter {
         boolean isAllowable(InvocationWrapper inv) {
             Method method = inv.getMethod();
             TpsLimit tpsLimit = method.getAnnotation(TpsLimit.class);
-            int rate = tpsLimit.rate();
-            long interval = tpsLimit.interval();
+            int rate = tpsLimit.count();
+            long interval = tpsLimit.length();
             String methodKey = method.toGenericString();
 
             if (rate > 0) {
