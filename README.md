@@ -338,7 +338,12 @@ Kryo：依赖底层ASM库来生成字节码，序列化后的报文体积小，�
 
 ### 流量控制
 
-使用固定窗口算法实现流量控制
+#### 固定窗口
 
 ![](https://cdn.jsdelivr.net/gh/ENE033/pic/JRPC%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6.png)	
 
+
+
+#### 滑动窗口
+
+![](https://cdn.jsdelivr.net/gh/ENE033/pic/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E9%99%90%E6%B5%81%E7%AE%97%E6%B3%95.png)	
