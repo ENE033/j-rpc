@@ -53,7 +53,7 @@ public class ExceptionCountCircuitBreaker implements CircuitBreaker {
         // 如果失败次数到达上限，那么熔断器打开
         int count = circuitBreakRule.exceptionCountThreshold();
         long length = circuitBreakRule.interval();
-        if (!success && !fixWindow.allowable(FixWindowInfo.create(count,length,methodKey))) {
+        if (!success && !fixWindow.allowable(FixWindowInfo.create(length, count, methodKey))) {
             breaker.close2open();
         }
     }

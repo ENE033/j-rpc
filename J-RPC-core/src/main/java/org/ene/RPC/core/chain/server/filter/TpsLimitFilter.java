@@ -44,7 +44,7 @@ public class TpsLimitFilter implements InvokerFilter {
         String methodKey = method.toGenericString();
 
         // 限流器不允许通过
-        if (!fixWindow.allowable(FixWindowInfo.create(count, length, methodKey))) {
+        if (!fixWindow.allowable(FixWindowInfo.create(length, count, methodKey))) {
             log.warn("调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper：{}", JSONObject.toJSONString(inv));
             throw new JRPCException(JRPCException.LIMIT_EXCEEDED_EXCEPTION,
                     "调用服务失败，已经到达服务的最大tps，请求被限流，InvocationWrapper："

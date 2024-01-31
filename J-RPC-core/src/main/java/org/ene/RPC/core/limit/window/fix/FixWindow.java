@@ -1,34 +1,18 @@
 package org.ene.RPC.core.limit.window.fix;
 
 import lombok.Data;
+import org.ene.RPC.core.limit.window.AbstractWindow;
+import org.ene.RPC.core.limit.window.Window;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class FixWindow {
-
-    private final Map<String, Stat> statMap = new ConcurrentHashMap<>();
-
-    public boolean allowable(FixWindowInfo windowInfo) {
-        int count = windowInfo.getCount();
-        String key = windowInfo.getKey();
-
-        if (count <= 0) {
-            return true;
-        }
-
-        Stat stat;
-        if ((stat = statMap.get(key)) == null) {
-            statMap.putIfAbsent(key, new Stat(windowInfo));
-            stat = statMap.get(key);
-        }
-        return stat.allowable();
-    }
+public class FixWindow extends AbstractWindow implements Window {
 
     @Data
-    static class Stat {
+    public static class Stat implements AbstractWindow.Stat {
         private final FixWindowInfo windowInfo;
 
         // 上一次Reset的时间
@@ -37,19 +21,39 @@ public class FixWindow {
         // 窗口当前的允许的请求量
         private final AtomicInteger allows;
 
-
-        Stat(FixWindowInfo windowInfo) {
+        public Stat(FixWindowInfo windowInfo) {
             this.windowInfo = windowInfo;
             this.lastResetTime = new AtomicLong(System.currentTimeMillis());
             this.allows = new AtomicInteger(windowInfo.getCount());
         }
 
+        AtomicBoolean updating = new AtomicBoolean(false);
+
+        @Override
         public boolean allowable() {
             long now = System.currentTimeMillis();
+
             if (now > lastResetTime.get() + windowInfo.getLength()) {
-                allows.set(windowInfo.getCount());
-                lastResetTime.set(now);
+                synchronized (this) {
+                    if (now > lastResetTime.get() + windowInfo.getLength()) {
+                        allows.set(windowInfo.getCount());
+                        lastResetTime.set(now);
+                    }
+                }
             }
+
+//            while (now > lastResetTime.get() + windowInfo.getLength()) {
+//                if (updating.compareAndSet(false, true)) {
+//                    if (now > lastResetTime.get() + windowInfo.getLength()) {
+//                        allows.set(windowInfo.getCount());
+//                        lastResetTime.set(now);
+//                        updating.set(false);
+//                    }
+//                } else {
+//                    Thread.yield();
+//                }
+//            }
+
             return allows.get() >= 0 && allows.decrementAndGet() >= 0;
         }
     }
